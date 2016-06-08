@@ -1,4 +1,5 @@
 require "camera"
+require "utils"
 
 Grid = {}
 Grid.__index = Grid
@@ -9,6 +10,8 @@ function Grid.create(x, y)
 
 	new.points = {}
 	new.selection = nil
+	new.time = 0
+	new.add_interval = 0.001
 
 	new.mouseWasDown = false
 	new.upPressed = false
@@ -19,7 +22,15 @@ function Grid.create(x, y)
 	return new
 end
 
+function Grid:has(x, y)
+	local x, y, distance = self:lip(x, y)
+	return distance < 0.5
+end
+
 function Grid:add(x, y)
+	x, y, distance = self:lip(x, y)
+	if distance < 10.6 then return end
+
 	for _,p in pairs(self.points) do
 		p.selected = false
 	end
@@ -48,6 +59,41 @@ function Grid:select(x, y)
 	else
 		self:add(x, y)
 	end
+end
+
+function Grid:lip(x, y)
+	local nearest = nil
+	local distance = math.huge
+	for _,p in pairs(self.points) do
+		p.selected = false
+		local currentDistance = math.sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y))
+		if currentDistance < distance then
+			distance = currentDistance
+			nearest = p
+		end
+	end
+
+	if nearest ~= nil then
+		local vx, vy = nearest.x - x, nearest.y - y
+
+		local nearest_x12 = nil
+		local nearest_y12 = nil
+		local distance12 = math.huge
+		for _,x12,y12 in utils.connection(utils.c12, nearest.x, nearest.y) do
+			local currentDistance12 = math.sqrt((x12 - x) * (x12 - x) + (y12 - y) * (y12 - y))
+			if currentDistance12 < distance12 then
+				distance12 = currentDistance12
+				nearest_x12 = x12
+				nearest_y12 = y12
+			end
+		end
+
+		if nearest_x12 ~= nil then
+			x, y = nearest_x12, nearest_y12
+		end
+	end
+
+	return x, y, distance
 end
 
 function Grid:snap(point)
@@ -116,10 +162,16 @@ function Grid:update(dt)
 	else
 		self.rightPressed = false
 	end
+
+	self.time = self.time + dt
+	if self.time > self.add_interval then
+		self.time = 0
+		self:select(12 + math.random(250), 12 + math.random(250))
+	end
 end
 
 function Grid:draw()
-	local s = 200
+	local s = 300
 	for x = -s, s, 1 do
 		if x % 10 == 0 then
 			love.graphics.setColor(255, 128, 0, 255)

@@ -1,6 +1,6 @@
 camera = {}
 
-camera.scale = 6
+camera.scale = 3
 
 function camera.mm2px(x, y)
 	return camera.scale * x, camera.scale * y
