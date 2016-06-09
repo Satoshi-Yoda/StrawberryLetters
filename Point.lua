@@ -27,6 +27,8 @@ end
 function Point:draw()
 	local x, y = self.x * camera.scale, self.y * camera.scale
 
+	love.graphics.setLineWidth(2)
+
 	if self.selected then
 		love.graphics.setColor(255, 0, 0, 128)
 	else

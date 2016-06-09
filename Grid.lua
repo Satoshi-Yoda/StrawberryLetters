@@ -11,7 +11,8 @@ function Grid.create(x, y)
 	new.points = {}
 	new.selection = nil
 	new.time = 0
-	new.add_interval = 0.001
+	new.add_interval = 0.0001
+	new.add_count = 50
 
 	new.mouseWasDown = false
 	new.upPressed = false
@@ -166,12 +167,15 @@ function Grid:update(dt)
 	self.time = self.time + dt
 	if self.time > self.add_interval then
 		self.time = 0
-		self:select(12 + math.random(250), 12 + math.random(250))
+		for i = 1, self.add_count do
+			local s = 10
+			self:select(s + math.random((camera.w) / camera.scale - 2 * s), s + math.random((camera.h) / camera.scale - 2 * s))
+		end
 	end
 end
 
 function Grid:draw()
-	local s = 300
+	local s = math.floor((camera.w) / camera.scale)
 	for x = -s, s, 1 do
 		if x % 10 == 0 then
 			love.graphics.setColor(255, 128, 0, 255)

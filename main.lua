@@ -8,9 +8,7 @@ global = {
 }
 
 function love.load()
-	local w = 768
-	local h = 768
-	love.window.setMode(w, h, {resizable=false, vsync=true})
+	love.window.setMode(camera.w, camera.h, {resizable=false, vsync=true})
 	love.graphics.setBackgroundColor(255, 255, 255)
 	math.randomseed(os.time())
 	love.window.setTitle("mode = " .. global.mode)
