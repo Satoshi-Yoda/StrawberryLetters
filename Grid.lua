@@ -175,6 +175,7 @@ function Grid:update(dt)
 end
 
 function Grid:draw()
+	love.graphics.setLineWidth(1)
 	local s = math.floor((camera.w) / camera.scale)
 	for x = -s, s, 1 do
 		if x % 10 == 0 then

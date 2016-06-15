@@ -27,40 +27,50 @@ end
 function Point:draw()
 	local x, y = self.x * camera.scale, self.y * camera.scale
 
-	love.graphics.setLineWidth(2)
+	love.graphics.setLineWidth(1)
 
 	if self.selected then
-		love.graphics.setColor(255, 0, 0, 128)
+		love.graphics.setColor(255, 0, 0, 168)
 	else
-		love.graphics.setColor(0, 0, 255, 128)
+		love.graphics.setColor(0, 0, 255, 168)
 	end
 
 	love.graphics.circle("line", x, y, 1, 12)
 	local r = 5.3 * camera.scale
 
-	-- love.graphics.line(x - r, y - r/2, x, y)
-	-- love.graphics.line(x - r, y + r/2, x, y)
-	-- love.graphics.line(x + r, y - r/2, x, y)
-	-- love.graphics.line(x + r, y + r/2, x, y)
-	-- love.graphics.line(x - r/2, y - r, x, y)
-	-- love.graphics.line(x - r/2, y + r, x, y)
-	-- love.graphics.line(x + r/2, y - r, x, y)
-	-- love.graphics.line(x + r/2, y + r, x, y)
-	-- love.graphics.line(x, y - r, x, y)
-	-- love.graphics.line(x, y + r, x, y)
-	-- love.graphics.line(x - r, y, x, y)
-	-- love.graphics.line(x + r, y, x, y)
-
-	for i = 0, 11 do
-		local angle = i * 2 * math.pi / 12
-		love.graphics.line(x + r * math.sin(angle), y + r * math.cos(angle), x, y)
+	local neighbours = {}
+	for i,x,y in utils.connection(utils.c12, self.x, self.y) do
+		if global.grid:has(x, y) then
+			neighbours[i] = {x = x, y = y}
+		end
 	end
 
-	love.graphics.setLineWidth(2)
-	love.graphics.setColor(0, 0, 255, 255)
-	for _,x,y in utils.connection(utils.c12, self.x, self.y) do
-		if global.grid:has(x, y) then
-			love.graphics.line(x * camera.scale, y * camera.scale, self.x * camera.scale, self.y * camera.scale)
+	for i = 1,12 do
+		local prev = i + 1
+		if prev > 12 then prev = 1 end
+		local angle = i * 2 * math.pi / 12
+		local ex, ey
+		if neighbours[i] == nil and neighbours[prev] == nil then
+			local cr = 2
+			local cx, cy = x + r * math.sin(angle), y + r * math.cos(angle)
+			love.graphics.circle("line", cx, cy, cr, 6)
+			ex, ey = x + (r - cr) * math.sin(angle), y + (r - cr) * math.cos(angle)
+		else
+			ex, ey = x + r * math.sin(angle), y + r * math.cos(angle)
+		end
+		love.graphics.line(ex, ey, x, y)
+	end
+
+	love.graphics.setLineWidth(4)
+	love.graphics.setColor(0, 0, 255, 168)
+	for i = 1,12 do
+		if neighbours[i] ~= nil then
+			local sx, sy = neighbours[i].x * camera.scale, neighbours[i].y * camera.scale
+			local fx, fy = self.x * camera.scale, self.y * camera.scale
+			local first_edge = (sx > fx) or ((sx == fx) and (sy > fy))
+			if first_edge then
+				love.graphics.line(sx, sy, fx, fy)
+			end
 		end
 	end
 end

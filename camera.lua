@@ -1,8 +1,8 @@
 camera = {}
 
-camera.scale = 3
-camera.w = 768
-camera.h = 768
+camera.scale = 4
+camera.w = 800
+camera.h = 800
 
 function camera.mm2px(x, y)
 	return camera.scale * x, camera.scale * y
