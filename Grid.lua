@@ -9,7 +9,6 @@ function Grid.create(x, y)
 	setmetatable(new, Grid)
 
 	new.points = {}
-	new.selection = nil
 	new.time = 0
 	new.add_interval = 0.0001
 	new.add_count = 50
@@ -40,14 +39,16 @@ function Grid:add(x, y)
 	newPoint.selected = true
 	self:snap(newPoint)
 	table.insert(self.points, newPoint)
-	self.selection = newPoint
 end
 
 function Grid:select(x, y)
 	local nearest = nil
 	local distance = math.huge
+	local keepSelection = love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") 
 	for _,p in pairs(self.points) do
-		p.selected = false
+		if not keepSelection then
+			p.selected = false
+		end
 		local currentDistance = math.sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y))
 		if currentDistance < distance then
 			distance = currentDistance
@@ -56,7 +57,6 @@ function Grid:select(x, y)
 	end
 	if nearest ~= nil and distance < 5 then
 		nearest.selected = true
-		self.selection = nearest
 	else
 		self:add(x, y)
 	end
@@ -66,7 +66,6 @@ function Grid:lip(x, y)
 	local nearest = nil
 	local distance = math.huge
 	for _,p in pairs(self.points) do
-		p.selected = false
 		local currentDistance = math.sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y))
 		if currentDistance < distance then
 			distance = currentDistance
@@ -95,6 +94,16 @@ function Grid:lip(x, y)
 	end
 
 	return x, y, distance
+end
+
+function Grid:get(x, y)
+	for _,p in pairs(self.points) do
+		local distance = math.sqrt((p.x - x) * (p.x - x) + (p.y - y) * (p.y - y))
+		if distance < 0.5 then
+			return p
+		end
+	end
+	return nil
 end
 
 function Grid:snap(point)
@@ -128,9 +137,27 @@ function Grid:update(dt)
 	-- 	self.tabPressed = false
 	-- end
 
+	self:moveSelection()
+	self:removeSelection()
+
+	-- self.time = self.time + dt
+	-- if self.time > self.add_interval then
+	-- 	self.time = 0
+	-- 	for i = 1, self.add_count do
+	-- 		local s = 10
+	-- 		self:select(s + math.random((camera.w) / camera.scale - 2 * s), s + math.random((camera.h) / camera.scale - 2 * s))
+	-- 	end
+	-- end
+end
+
+function Grid:moveSelection()
 	if love.keyboard.isDown("up") then
 		if self.upPressed == false then
-			self.selection.y = self.selection.y - 2.5
+			for _,p in pairs(self.points) do
+			if p.selected then
+				p.y = p.y - 2.5
+			end
+			end
 		end
 		self.upPressed = true
 	else
@@ -139,7 +166,11 @@ function Grid:update(dt)
 
 	if love.keyboard.isDown("down") then
 		if self.downPressed == false then
-			self.selection.y = self.selection.y + 2.5
+			for _,p in pairs(self.points) do
+			if p.selected then
+				p.y = p.y + 2.5
+			end
+			end
 		end
 		self.downPressed = true
 	else
@@ -148,7 +179,11 @@ function Grid:update(dt)
 
 	if love.keyboard.isDown("left") then
 		if self.leftPressed == false then
-			self.selection.x = self.selection.x - 2.5
+			for _,p in pairs(self.points) do
+			if p.selected then
+				p.x = p.x - 2.5
+			end
+			end
 		end
 		self.leftPressed = true
 	else
@@ -157,19 +192,24 @@ function Grid:update(dt)
 
 	if love.keyboard.isDown("right") then
 		if self.rightPressed == false then
-			self.selection.x = self.selection.x + 2.5
+			for _,p in pairs(self.points) do
+			if p.selected then
+				p.x = p.x + 2.5
+			end
+			end
 		end
 		self.rightPressed = true
 	else
 		self.rightPressed = false
 	end
+end
 
-	self.time = self.time + dt
-	if self.time > self.add_interval then
-		self.time = 0
-		for i = 1, self.add_count do
-			local s = 10
-			self:select(s + math.random((camera.w) / camera.scale - 2 * s), s + math.random((camera.h) / camera.scale - 2 * s))
+function Grid:removeSelection()
+	if love.keyboard.isDown("backspace") or love.keyboard.isDown("clear") or love.keyboard.isDown("delete") then
+		for i,p in pairs(self.points) do
+			if p.selected then
+				table.remove(self.points, i)
+			end
 		end
 	end
 end

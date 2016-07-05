@@ -40,8 +40,9 @@ function Point:draw()
 
 	local neighbours = {}
 	for i,x,y in utils.connection(utils.c12, self.x, self.y) do
-		if global.grid:has(x, y) then
-			neighbours[i] = {x = x, y = y}
+		local point = global.grid:get(x, y)
+		if point ~= nil then
+			neighbours[i] = point
 		end
 	end
 
@@ -62,13 +63,17 @@ function Point:draw()
 	end
 
 	love.graphics.setLineWidth(4)
-	love.graphics.setColor(0, 0, 255, 168)
 	for i = 1,12 do
 		if neighbours[i] ~= nil then
 			local sx, sy = neighbours[i].x * camera.scale, neighbours[i].y * camera.scale
 			local fx, fy = self.x * camera.scale, self.y * camera.scale
 			local first_edge = (sx > fx) or ((sx == fx) and (sy > fy))
 			if first_edge then
+				if self.selected or neighbours[i].selected then
+					love.graphics.setColor(255, 0, 0, 168)
+				else
+					love.graphics.setColor(0, 0, 255, 168)
+				end
 				love.graphics.line(sx, sy, fx, fy)
 			end
 		end
