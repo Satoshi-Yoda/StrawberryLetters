@@ -1,3 +1,4 @@
+require "Button"
 require "camera"
 require "utils"
 
@@ -9,11 +10,13 @@ function Grid.create(x, y)
 	setmetatable(new, Grid)
 
 	new.points = {}
+	new.buttons = {}
 	new.time = 0
 	new.add_interval = 0.0001
 	new.add_count = 50
 
 	new.mouseWasDown = false
+	new.rightMouseWasDown = false
 	new.upPressed = false
 	new.downPressed = false
 	new.leftPressed = false
@@ -22,17 +25,135 @@ function Grid.create(x, y)
 	return new
 end
 
+function Grid:createPlaceButtons(x, y)
+	self.buttons = {}
+
+	local mm_x, mm_y = camera.px2mm(x, y)
+
+	local newButton = Button.create("point", x, y, 200, 30, function()
+		global.grid:deselect()
+		local x, y = global.grid:snapXY(mm_x, mm_y)
+		global.grid:add(x, y, false)
+		global.grid.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+
+	local newButton = Button.create("honeycomb 2 even", x, y + 30, 200, 30, function()
+		global.grid:deselect()
+		local x, y = global.grid:snapXY(mm_x, mm_y)
+		global.grid:add(x, y, false)
+		for i,cx,cy in utils.connection(utils.c12, x, y) do
+			if i % 2 == 0 then
+				global.grid:add(cx, cy, false)
+			end
+		end
+		global.grid.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+
+	local newButton = Button.create("honeycomb 2 odd", x, y + 60, 200, 30, function()
+		global.grid:deselect()
+		local x, y = global.grid:snapXY(mm_x, mm_y)
+		global.grid:add(x, y, false)
+		for i,cx,cy in utils.connection(utils.c12, x, y) do
+			if i % 2 == 1 then
+				global.grid:add(cx, cy, false)
+			end
+		end
+		global.grid.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+
+	local newButton = Button.create("honeycomb 3 even", x, y + 90, 200, 30, function()
+		global.grid:deselect()
+		local x, y = global.grid:snapXY(mm_x, mm_y)
+		global.grid:add(x, y, false)
+		for i,cx,cy in utils.connection(utils.c12, x, y) do
+			if i % 2 == 1 then
+				global.grid:add(cx, cy, false)
+			end
+		end
+		for i,cx,cy in utils.connection(utils.c12, x, y) do
+			local dx, dy = global.grid:lip(1.9*(cx - x) + x, 1.9*(cy - y) + y)
+			global.grid:add(dx, dy, false)
+		end
+		global.grid.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+
+	local newButton = Button.create("honeycomb 3 odd", x, y + 120, 200, 30, function()
+		global.grid:deselect()
+		local x, y = global.grid:snapXY(mm_x, mm_y)
+		global.grid:add(x, y, false)
+		for i,cx,cy in utils.connection(utils.c12, x, y) do
+			if i % 2 == 0 then
+				global.grid:add(cx, cy, false)
+			end
+		end
+		for i,cx,cy in utils.connection(utils.c12, x, y) do
+			local dx, dy = global.grid:lip(1.9*(cx - x) + x, 1.9*(cy - y) + y)
+			global.grid:add(dx, dy, false)
+		end
+		global.grid.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+
+	local newButton = Button.create("transformer 3 even", x, y + 150, 200, 30, function()
+		global.grid:deselect()
+		local x, y = global.grid:snapXY(mm_x, mm_y)
+		global.grid:add(x, y, false)
+		for i,cx,cy in utils.connection(utils.c12, x, y) do
+			if i % 2 == 0 then
+				global.grid:add(cx, cy, false)
+			end
+		end
+		for i,cx,cy in utils.connection(utils.c12s, x, y) do
+			local dx, dy = global.grid:lip(2*(cx - x) + x, 2*(cy - y) + y)
+			global.grid:add(dx, dy, false)
+		end
+		global.grid.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+
+	local newButton = Button.create("transformer 3 odd", x, y + 180, 200, 30, function()
+		global.grid:deselect()
+		local x, y = global.grid:snapXY(mm_x, mm_y)
+		global.grid:add(x, y, false)
+		for i,cx,cy in utils.connection(utils.c12, x, y) do
+			if i % 2 == 1 then
+				global.grid:add(cx, cy, false)
+			end
+		end
+		for i,cx,cy in utils.connection(utils.c12s, x, y) do
+			local dx, dy = global.grid:lip(2*(cx - x) + x, 2*(cy - y) + y)
+			global.grid:add(dx, dy, false)
+		end
+		global.grid.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+end
+
 function Grid:has(x, y)
 	local x, y, distance = self:lip(x, y)
 	return distance < 0.5
 end
 
-function Grid:add(x, y)
-	x, y, distance = self:lip(x, y)
-	if distance < 10.6 then return end
-
+function Grid:deselect()
 	for _,p in pairs(self.points) do
 		p.selected = false
+	end
+end
+
+function Grid:add(x, y, removeSelection)
+	if removeSelection == nil then removeSelection = true end
+
+	-- x, y, distance = self:lip(x, y)
+	-- if distance < 10.6 then return end
+
+	if removeSelection then
+		for _,p in pairs(self.points) do
+			p.selected = false
+		end
 	end
 
 	local newPoint = Point.create(x, y)
@@ -111,43 +232,10 @@ function Grid:snap(point)
 	point.y = 2.5 * math.floor(0.5 + (point.y / 2.5))
 end
 
-function Grid:update(dt)
-	if love.mouse.isDown(1) then
-		if self.mouseWasDown == false then
-			local px_x, px_y = love.mouse.getPosition()
-			local x, y = camera.px2mm(px_x, px_y)
-			self:select(x, y)
-		end
-		self.mouseWasDown = true
-	else
-		self.mouseWasDown = false
-	end
-
-	-- if love.keyboard.isDown("tab") then
-	-- 	if self.tabPressed == false then
-	-- 		if global.mode == "add" then
-	-- 			global.mode = "move"
-	-- 		else
-	-- 			global.mode = "add"
-	-- 		end
-	-- 		love.window.setTitle("mode = " .. global.mode)
-	-- 	end
-	-- 	self.tabPressed = true
-	-- else
-	-- 	self.tabPressed = false
-	-- end
-
-	self:moveSelection()
-	self:removeSelection()
-
-	-- self.time = self.time + dt
-	-- if self.time > self.add_interval then
-	-- 	self.time = 0
-	-- 	for i = 1, self.add_count do
-	-- 		local s = 10
-	-- 		self:select(s + math.random((camera.w) / camera.scale - 2 * s), s + math.random((camera.h) / camera.scale - 2 * s))
-	-- 	end
-	-- end
+function Grid:snapXY(x, y)
+	local new_x = 2.5 * math.floor(0.5 + (x / 2.5))
+	local new_y = 2.5 * math.floor(0.5 + (y / 2.5))
+	return new_x, new_y
 end
 
 function Grid:moveSelection()
@@ -214,6 +302,61 @@ function Grid:removeSelection()
 	end
 end
 
+function Grid:update(dt)
+	local wasButton = false
+	for _,b in pairs(self.buttons) do
+		wasButton = wasButton or b:update(dt)
+	end
+	if wasButton then return end
+
+	if love.mouse.isDown(1) then
+		if self.mouseWasDown == false then
+			local px_x, px_y = love.mouse.getPosition()
+			local x, y = camera.px2mm(px_x, px_y)
+			self:select(x, y)
+		end
+		self.mouseWasDown = true
+	else
+		self.mouseWasDown = false
+	end
+
+	if love.mouse.isDown(2) then
+		if self.rightMouseWasDown == false then
+			local px_x, px_y = love.mouse.getPosition()
+			self:createPlaceButtons(px_x, px_y)
+		end
+		self.rightMouseWasDown = true
+	else
+		self.rightMouseWasDown = false
+	end
+
+	-- if love.keyboard.isDown("tab") then
+	-- 	if self.tabPressed == false then
+	-- 		if global.mode == "add" then
+	-- 			global.mode = "move"
+	-- 		else
+	-- 			global.mode = "add"
+	-- 		end
+	-- 		love.window.setTitle("mode = " .. global.mode)
+	-- 	end
+	-- 	self.tabPressed = true
+	-- else
+	-- 	self.tabPressed = false
+	-- end
+
+	self:moveSelection()
+	self:removeSelection()
+
+	-- self.time = self.time + dt
+	-- if self.time > self.add_interval then
+	-- 	self.time = 0
+	-- 	for i = 1, self.add_count do
+	-- 		local s = 10
+	-- 		self:select(s + math.random((camera.w) / camera.scale - 2 * s), s + math.random((camera.h) / camera.scale - 2 * s))
+	-- 	end
+	-- end
+end
+
 function Grid:draw()
 	love.graphics.setLineWidth(1)
 	local s = math.floor((camera.w) / camera.scale)
@@ -244,5 +387,9 @@ function Grid:draw()
 
 	for _,p in pairs(self.points) do
 		p:draw()
+	end
+
+	for _,b in pairs(self.buttons) do
+		b:draw()
 	end
 end

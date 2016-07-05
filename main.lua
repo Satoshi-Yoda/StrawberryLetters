@@ -14,10 +14,6 @@ function love.load()
 	love.window.setTitle("mode = " .. global.mode)
 
 	global.grid = Grid.create()
-
-	-- for i = 1, 10 do
-	-- 	global.grid:add(math.random(w / camera.scale), math.random(h / camera.scale))
-	-- end
 end
 
 function love.update(dt)

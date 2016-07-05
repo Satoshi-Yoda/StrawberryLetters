@@ -26,7 +26,19 @@ function utils.c12(x, y)
 		table.insert(result, {x + dx, y + dy})
 	end
 	return result
-end 
+end
+
+function utils.c12s(x, y)
+	local result = {}
+	local r = 10.6
+	for i = 0, 11 do
+		local angle = i * math.pi / 6
+		local dx = r * math.sin(angle)
+		local dy = r * math.cos(angle)
+		table.insert(result, {x + dx, y + dy})
+	end
+	return result
+end
 
 function utils.connection_iterator(table, i)
     i = i + 1
