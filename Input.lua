@@ -3,7 +3,7 @@ Input.__index = Input
 
 CHARACTERS = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','_','-'}
 
-function Input.create(title, x, y, w, h)
+function Input.create(title, x, y, w, h, method)
 	local new = {}
 	setmetatable(new, Input)
 
@@ -13,8 +13,10 @@ function Input.create(title, x, y, w, h)
 	new.y = y
 	new.w = w
 	new.h = h
+	new.method = method
 	new.time = 0
 	new.cursor = true
+	new.done = false
 
 	new.pressed = {}
 	for _,c in pairs(CHARACTERS) do
@@ -51,7 +53,8 @@ function Input:update(dt)
 			self.pressed["backspace"] = false
 		end
 
-		if love.keyboard.isDown("return") then
+		if love.keyboard.isDown("return") and self.done == false then
+			self.method(self)
 			self.done = true
 		end
 	end

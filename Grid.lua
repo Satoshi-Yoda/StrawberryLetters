@@ -1,5 +1,6 @@
 require "Button"
 require "Input"
+require "Group"
 require "camera"
 require "utils"
 
@@ -11,6 +12,7 @@ function Grid.create(x, y)
 	setmetatable(new, Grid)
 
 	new.points = {}
+	new.savedGroups = {}
 	new.buttons = {}
 	new.time = 0
 	new.add_interval = 0.0001
@@ -40,7 +42,10 @@ end
 function Grid:createInput(x, y)
 	self.buttons = {}
 
-	local newInput = Input.create("Enter name and press Enter", x, y, 300, 30)
+	local newInput = Input.create("Enter name and press Enter", x, y, 300, 30, function(input)
+		local newGroup = Group.createFromSelection(input.text)
+		table.insert(global.grid.savedGroups, newGroup)
+	end)
 	table.insert(self.buttons, newInput)
 end
 
@@ -150,6 +155,16 @@ function Grid:createPlaceButtons(x, y)
 		global.grid.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
+
+	for i,g in pairs(self.savedGroups) do
+		local newButton = Button.create(g.name, x, y + 180 + i * 30, 200, 30, function()
+			global.grid:deselect()
+			local x, y = global.grid:snapXY(mm_x, mm_y)
+			g:placeToGrid(x, y)
+			global.grid.buttons = {}
+		end)
+		table.insert(self.buttons, newButton)
+	end
 end
 
 function Grid:has(x, y, maxDistance)
