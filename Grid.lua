@@ -1,4 +1,5 @@
 require "Button"
+require "Input"
 require "camera"
 require "utils"
 
@@ -23,6 +24,11 @@ function Grid.create(x, y)
 	new.rightPressed = false
 
 	return new
+end
+
+function Grid:createInput(x, y)
+	local newInput = Input.create("Enter name and press Enter", x, y, 300, 30)
+	table.insert(self.buttons, newInput)
 end
 
 function Grid:createPlaceButtons(x, y)
@@ -323,7 +329,8 @@ function Grid:update(dt)
 	if love.mouse.isDown(2) then
 		if self.rightMouseWasDown == false then
 			local px_x, px_y = love.mouse.getPosition()
-			self:createPlaceButtons(px_x, px_y)
+			-- self:createPlaceButtons(px_x, px_y)
+			self:createInput(px_x, px_y)
 		end
 		self.rightMouseWasDown = true
 	else
