@@ -26,7 +26,20 @@ function Grid.create(x, y)
 	return new
 end
 
+function Grid:createSaveButton(x, y)
+	self.buttons = {}
+
+	local mm_x, mm_y = camera.px2mm(x, y)
+
+	local newButton = Button.create("save selection", x, y, 200, 30, function()
+		global.grid:createInput(x, y)
+	end)
+	table.insert(self.buttons, newButton)
+end
+
 function Grid:createInput(x, y)
+	self.buttons = {}
+
 	local newInput = Input.create("Enter name and press Enter", x, y, 300, 30)
 	table.insert(self.buttons, newInput)
 end
@@ -139,9 +152,10 @@ function Grid:createPlaceButtons(x, y)
 	table.insert(self.buttons, newButton)
 end
 
-function Grid:has(x, y)
+function Grid:has(x, y, maxDistance)
+	maxDistance = maxDistance or 0.5
 	local x, y, distance = self:lip(x, y)
-	return distance < 0.5
+	return distance < maxDistance
 end
 
 function Grid:deselect()
@@ -182,10 +196,11 @@ function Grid:select(x, y)
 			nearest = p
 		end
 	end
-	if nearest ~= nil and distance < 5 then
+	if nearest ~= nil and distance < 5.3 then
 		nearest.selected = true
 	else
-		self:add(x, y)
+		-- self:add(x, y)
+		self.buttons = {}
 	end
 end
 
@@ -308,6 +323,16 @@ function Grid:removeSelection()
 	end
 end
 
+function Grid:selectionSize()
+	local size = 0
+	for _,p in pairs(self.points) do
+		if p.selected then
+			size = size + 1
+		end
+	end
+	return size
+end
+
 function Grid:update(dt)
 	local wasButton = false
 	for _,b in pairs(self.buttons) do
@@ -329,8 +354,16 @@ function Grid:update(dt)
 	if love.mouse.isDown(2) then
 		if self.rightMouseWasDown == false then
 			local px_x, px_y = love.mouse.getPosition()
-			-- self:createPlaceButtons(px_x, px_y)
-			self:createInput(px_x, px_y)
+			local mm_x, mm_y = camera.px2mm(px_x, px_y)
+			if self:has(mm_x, mm_y, 6) then
+				if self:selectionSize() > 0 then
+					-- self:createPlaceButtons(px_x, px_y)
+					-- self:createInput(px_x, px_y)
+					self:createSaveButton(px_x, px_y)
+				end
+			else
+				self:createPlaceButtons(px_x, px_y)
+			end
 		end
 		self.rightMouseWasDown = true
 	else
