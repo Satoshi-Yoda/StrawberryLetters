@@ -11,7 +11,7 @@ function love.load()
 	love.window.setMode(camera.w, camera.h, {resizable=false, vsync=true})
 	love.graphics.setBackgroundColor(255, 255, 255)
 	math.randomseed(os.time())
-	love.window.setTitle("mode = " .. global.mode)
+	love.window.setTitle("Strawberry Letters")
 
 	global.grid = Grid.create()
 end
@@ -24,3 +24,4 @@ end
 function love.draw()
 	global.grid:draw()
 end
+

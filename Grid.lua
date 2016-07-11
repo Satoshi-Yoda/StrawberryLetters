@@ -218,9 +218,9 @@ function Grid:select(x, y)
 			nearest.willBeSelected = true
 		end
 	else
-		self:add(x, y)
+		-- self:add(x, y)
 		self.buttons = {}
-		keepSelection = true
+		-- keepSelection = true
 	end
 
 	for _,p in pairs(self.points) do
