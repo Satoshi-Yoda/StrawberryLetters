@@ -432,7 +432,12 @@ function Grid:update(dt)
 	-- 	self.tabPressed = false
 	-- end
 
-	self:moveSelection()
+	if self:selectionSize() > 0 then
+		self:moveSelection()
+	else
+		camera.move(dt)
+	end
+
 	self:removeSelection()
 
 	-- self.time = self.time + dt

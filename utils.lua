@@ -12,6 +12,10 @@ function utils.math.normalize(x, y, length)
 	end
 end
 
+function utils.math.clamp(low, x, high)
+	return math.min(math.max(low, x), high)
+end
+
 function utils.eight(x, y)
     return {{x-1, y}, {x+1, y}, {x, y-1}, {x, y+1}, {x-1, y+1}, {x+1, y-1}, {x-1, y-1}, {x+1, y+1}}
 end

@@ -26,7 +26,7 @@ function Point:getNeighbours()
 end
 
 function Point:draw()
-	local x, y = self.x * camera.scale, self.y * camera.scale
+	local x, y = camera.mm2px(self.x, self.y)
 
 	love.graphics.setLineWidth(1)
 
@@ -60,8 +60,8 @@ function Point:draw()
 	love.graphics.setLineWidth(4)
 	for i = 1,12 do
 		if neighbours[i] ~= nil then
-			local sx, sy = neighbours[i].x * camera.scale, neighbours[i].y * camera.scale
-			local fx, fy = self.x * camera.scale, self.y * camera.scale
+			local sx, sy = camera.mm2px(neighbours[i].x, neighbours[i].y) -- neighbours[i].x * camera.scale, neighbours[i].y * camera.scale
+			local fx, fy = camera.mm2px(self.x, self.y) -- self.x * camera.scale, self.y * camera.scale
 			local first_edge = (sx > fx) or ((sx == fx) and (sy > fy))
 			if first_edge then
 				if self.selected or neighbours[i].selected then

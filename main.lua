@@ -17,6 +17,7 @@ function love.load()
 end
 
 function love.update(dt)
+	camera.update(dt)
 	global.grid:update(dt)
 end
 
