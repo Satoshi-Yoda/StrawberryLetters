@@ -201,21 +201,53 @@ function Grid:select(x, y)
 	local nearest = nil
 	local distance = math.huge
 	local keepSelection = love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") 
+	
 	for _,p in pairs(self.points) do
-		if not keepSelection then
-			p.selected = false
-		end
 		local currentDistance = math.sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y))
 		if currentDistance < distance then
 			distance = currentDistance
 			nearest = p
 		end
 	end
+	
 	if nearest ~= nil and distance < 5.3 then
-		nearest.selected = true
+		if nearest.selected then
+			self:expandSelection()
+			keepSelection = true
+		else
+			nearest.willBeSelected = true
+		end
 	else
-		-- self:add(x, y)
+		self:add(x, y)
 		self.buttons = {}
+	end
+
+	for _,p in pairs(self.points) do
+		if not keepSelection then
+			p.selected = false
+		end
+		if p.willBeSelected then
+			p.selected = true
+			p.willBeSelected = nil
+		end
+	end
+end
+
+function Grid:expandSelection()
+	for _,p in pairs(self.points) do
+	if p.selected then
+		local neighbours = p:getNeighbours()
+		for _,n in pairs(neighbours) do
+			n.willBeSelected = true
+		end
+	end
+	end
+
+	for _,p in pairs(self.points) do
+	if p.willBeSelected then
+		p.selected = true
+		p.willBeSelected = nil
+	end
 	end
 end
 

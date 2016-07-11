@@ -14,15 +14,16 @@ function Point.create(x, y)
 	return new
 end
 
--- function Point:neighbours()
--- 	local result = {}
--- 	for i,x,y in utils.connection(utils.c12, self.x, self.y) do
--- 		if global.grid:has(x, y) then
--- 			table.insert(result, i)
--- 		end
--- 	end
--- 	return result
--- end
+function Point:getNeighbours()
+	local neighbours = {}
+	for i,x,y in utils.connection(utils.c12, self.x, self.y) do
+		local point = global.grid:get(x, y)
+		if point ~= nil then
+			neighbours[i] = point
+		end
+	end
+	return neighbours
+end
 
 function Point:draw()
 	local x, y = self.x * camera.scale, self.y * camera.scale
@@ -38,13 +39,7 @@ function Point:draw()
 	love.graphics.circle("line", x, y, 1, 12)
 	local r = 5.3 * camera.scale
 
-	local neighbours = {}
-	for i,x,y in utils.connection(utils.c12, self.x, self.y) do
-		local point = global.grid:get(x, y)
-		if point ~= nil then
-			neighbours[i] = point
-		end
-	end
+	local neighbours = self:getNeighbours()
 
 	for i = 1,12 do
 		local prev = i + 1
