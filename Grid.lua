@@ -220,6 +220,7 @@ function Grid:select(x, y)
 	else
 		self:add(x, y)
 		self.buttons = {}
+		keepSelection = true
 	end
 
 	for _,p in pairs(self.points) do
