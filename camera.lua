@@ -4,7 +4,7 @@ camera.scale = 4
 camera.w = 800
 camera.h = 800
 
-camera.px_x = 100
+camera.px_x = 0
 camera.px_y = 0
 
 camera.zoomPressed = false
