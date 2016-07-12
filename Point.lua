@@ -31,9 +31,9 @@ function Point:draw()
 	love.graphics.setLineWidth(1)
 
 	if self.selected then
-		love.graphics.setColor(255, 0, 0, 168)
+		love.graphics.setColor(255, 0, 0, 168 * camera.multipler())
 	else
-		love.graphics.setColor(0, 0, 255, 168)
+		love.graphics.setColor(0, 0, 255, 168 * camera.multipler())
 	end
 
 	love.graphics.circle("line", x, y, 1, 12)
@@ -57,7 +57,7 @@ function Point:draw()
 		love.graphics.line(ex, ey, x, y)
 	end
 
-	love.graphics.setLineWidth(4)
+	love.graphics.setLineWidth(4 * camera.multipler())
 	for i = 1,12 do
 		if neighbours[i] ~= nil then
 			local sx, sy = camera.mm2px(neighbours[i].x, neighbours[i].y) -- neighbours[i].x * camera.scale, neighbours[i].y * camera.scale

@@ -463,11 +463,11 @@ function Grid:draw()
 
 	for x = x_min, x_max, 1 do
 		if x % 10 == 0 then
-			love.graphics.setColor(255, 128, 0, 255)
+			love.graphics.setColor(255, 128, 0, 255 * camera.multipler())
 		elseif x % 5 == 0 then
-			love.graphics.setColor(255, 128, 0, 128)
+			love.graphics.setColor(255, 128, 0, 128 * camera.multipler())
 		else
-			love.graphics.setColor(255, 128, 0, 64)
+			love.graphics.setColor(255, 128, 0, 64 * camera.multipler())
 		end
 		local x1, y1 = camera.mm2px(x, y_min)
 		local x2, y2 = camera.mm2px(x, y_max)
@@ -476,11 +476,11 @@ function Grid:draw()
 	
 	for y = y_min, y_max, 1 do
 		if y % 10 == 0 then
-			love.graphics.setColor(255, 128, 0, 255)
+			love.graphics.setColor(255, 128, 0, 255 * camera.multipler())
 		elseif y % 5 == 0 then
-			love.graphics.setColor(255, 128, 0, 128)
+			love.graphics.setColor(255, 128, 0, 128 * camera.multipler())
 		else
-			love.graphics.setColor(255, 128, 0, 64)
+			love.graphics.setColor(255, 128, 0, 64 * camera.multipler())
 		end
 		local x1, y1 = camera.mm2px(x_min, y)
 		local x2, y2 = camera.mm2px(x_max, y)
