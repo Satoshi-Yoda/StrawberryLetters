@@ -452,8 +452,16 @@ end
 
 function Grid:draw()
 	love.graphics.setLineWidth(1)
-	local s = math.floor((camera.w) / camera.scale)
-	for x = -s, s, 1 do
+
+	local s = 4
+	local x_min, y_min = camera.px2mm(-s, -s)
+	local x_max, y_max = camera.px2mm(camera.w + s, camera.h + s)
+	x_min = math.floor(x_min)
+	x_max = math.floor(x_max)
+	y_min = math.floor(y_min)
+	y_max = math.floor(y_max)
+
+	for x = x_min, x_max, 1 do
 		if x % 10 == 0 then
 			love.graphics.setColor(255, 128, 0, 255)
 		elseif x % 5 == 0 then
@@ -461,11 +469,12 @@ function Grid:draw()
 		else
 			love.graphics.setColor(255, 128, 0, 64)
 		end
-		local x1, y1 = camera.mm2px(x, -s)
-		local x2, y2 = camera.mm2px(x, s)
+		local x1, y1 = camera.mm2px(x, y_min)
+		local x2, y2 = camera.mm2px(x, y_max)
 		love.graphics.line(x1, y1, x2, y2)
 	end
-	for y = -s, s, 1 do
+	
+	for y = y_min, y_max, 1 do
 		if y % 10 == 0 then
 			love.graphics.setColor(255, 128, 0, 255)
 		elseif y % 5 == 0 then
@@ -473,8 +482,8 @@ function Grid:draw()
 		else
 			love.graphics.setColor(255, 128, 0, 64)
 		end
-		local x1, y1 = camera.mm2px(-s, y)
-		local x2, y2 = camera.mm2px(s, y)
+		local x1, y1 = camera.mm2px(x_min, y)
+		local x2, y2 = camera.mm2px(x_max, y)
 		love.graphics.line(x1, y1, x2, y2)
 	end
 

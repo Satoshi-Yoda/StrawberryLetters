@@ -10,6 +10,10 @@ camera.px_y = 0
 camera.zoomPressed = false
 camera.unzoomPressed = false
 
+function camera.multipler()
+	return camera.scale / 4
+end
+
 function camera.update(dt)
 	if love.keyboard.isDown("=") then
 		if camera.zoomPressed == false then
