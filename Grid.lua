@@ -418,20 +418,6 @@ function Grid:update(dt)
 		self.rightMouseWasDown = false
 	end
 
-	-- if love.keyboard.isDown("tab") then
-	-- 	if self.tabPressed == false then
-	-- 		if global.mode == "add" then
-	-- 			global.mode = "move"
-	-- 		else
-	-- 			global.mode = "add"
-	-- 		end
-	-- 		love.window.setTitle("mode = " .. global.mode)
-	-- 	end
-	-- 	self.tabPressed = true
-	-- else
-	-- 	self.tabPressed = false
-	-- end
-
 	if self:selectionSize() > 0 then
 		self:moveSelection()
 	else
