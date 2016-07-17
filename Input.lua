@@ -1,7 +1,8 @@
 Input = {}
 Input.__index = Input
 
-CHARACTERS = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','_','-'}
+CHARACTERS = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+			  '1','2','3','4','5','6','7','8','9','0','-'}
 
 function Input.create(title, x, y, w, h, method)
 	local new = {}
@@ -27,6 +28,8 @@ function Input.create(title, x, y, w, h, method)
 end
 
 function Input:update(dt)
+	local wasButton = false
+
 	self.time = self.time + dt
 	if math.floor(self.time) - self.time > -0.5 then
 		self.cursor = true
@@ -39,6 +42,7 @@ function Input:update(dt)
 			if self.pressed[c] == false then
 				self.text = self.text .. c
 				self.pressed[c] = true
+				wasButton = true
 			end
 		else
 			self.pressed[c] = false
@@ -46,8 +50,9 @@ function Input:update(dt)
 
 		if love.keyboard.isDown("backspace") then
 			if self.pressed["backspace"] == false then
-				-- self.text = self.text:substr(1, #self.text - 1)
+				self.text = string.sub(self.text, 1, #self.text - 1)
 				self.pressed["backspace"] = true
+				wasButton = true
 			end
 		else
 			self.pressed["backspace"] = false
@@ -56,8 +61,11 @@ function Input:update(dt)
 		if love.keyboard.isDown("return") and self.done == false then
 			self.method(self)
 			self.done = true
+			wasButton = true
 		end
 	end
+
+	return wasButton
 end
 
 function Input:draw()
