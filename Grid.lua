@@ -13,7 +13,6 @@ function Grid.create(x, y)
 
 	new.points = {}
 	new.savedGroups = {}
-	new.buttons = {}
 	new.time = 0
 	new.add_interval = 0.0001
 	new.add_count = 50
@@ -26,145 +25,6 @@ function Grid.create(x, y)
 	new.rightPressed = false
 
 	return new
-end
-
-function Grid:createSaveButton(x, y)
-	self.buttons = {}
-
-	local mm_x, mm_y = camera.px2mm(x, y)
-
-	local newButton = Button.create("save selection", x, y, 200, 30, function()
-		global.grid:createInput(x, y)
-	end)
-	table.insert(self.buttons, newButton)
-end
-
-function Grid:createInput(x, y)
-	self.buttons = {}
-
-	local newInput = Input.create("Enter name and press Enter", x, y, 300, 30, function(input)
-		local newGroup = Group.createFromSelection(input.text)
-		table.insert(global.grid.savedGroups, newGroup)
-	end)
-	table.insert(self.buttons, newInput)
-end
-
-function Grid:createPlaceButtons(x, y)
-	self.buttons = {}
-
-	local mm_x, mm_y = camera.px2mm(x, y)
-
-	local newButton = Button.create("point", x, y, 200, 30, function()
-		global.grid:deselect()
-		local x, y = global.grid:snapXY(mm_x, mm_y)
-		global.grid:add(x, y, false)
-		global.grid.buttons = {}
-	end)
-	table.insert(self.buttons, newButton)
-
-	local newButton = Button.create("honeycomb 2 even", x, y + 30, 200, 30, function()
-		global.grid:deselect()
-		local x, y = global.grid:snapXY(mm_x, mm_y)
-		global.grid:add(x, y, false)
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			if i % 2 == 0 then
-				global.grid:add(cx, cy, false)
-			end
-		end
-		global.grid.buttons = {}
-	end)
-	table.insert(self.buttons, newButton)
-
-	local newButton = Button.create("honeycomb 2 odd", x, y + 60, 200, 30, function()
-		global.grid:deselect()
-		local x, y = global.grid:snapXY(mm_x, mm_y)
-		global.grid:add(x, y, false)
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			if i % 2 == 1 then
-				global.grid:add(cx, cy, false)
-			end
-		end
-		global.grid.buttons = {}
-	end)
-	table.insert(self.buttons, newButton)
-
-	local newButton = Button.create("honeycomb 3 even", x, y + 90, 200, 30, function()
-		global.grid:deselect()
-		local x, y = global.grid:snapXY(mm_x, mm_y)
-		global.grid:add(x, y, false)
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			if i % 2 == 1 then
-				global.grid:add(cx, cy, false)
-			end
-		end
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			local dx, dy = global.grid:lip(1.9*(cx - x) + x, 1.9*(cy - y) + y)
-			global.grid:add(dx, dy, false)
-		end
-		global.grid.buttons = {}
-	end)
-	table.insert(self.buttons, newButton)
-
-	local newButton = Button.create("honeycomb 3 odd", x, y + 120, 200, 30, function()
-		global.grid:deselect()
-		local x, y = global.grid:snapXY(mm_x, mm_y)
-		global.grid:add(x, y, false)
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			if i % 2 == 0 then
-				global.grid:add(cx, cy, false)
-			end
-		end
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			local dx, dy = global.grid:lip(1.9*(cx - x) + x, 1.9*(cy - y) + y)
-			global.grid:add(dx, dy, false)
-		end
-		global.grid.buttons = {}
-	end)
-	table.insert(self.buttons, newButton)
-
-	local newButton = Button.create("transformer 3 even", x, y + 150, 200, 30, function()
-		global.grid:deselect()
-		local x, y = global.grid:snapXY(mm_x, mm_y)
-		global.grid:add(x, y, false)
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			if i % 2 == 0 then
-				global.grid:add(cx, cy, false)
-			end
-		end
-		for i,cx,cy in utils.connection(utils.c12s, x, y) do
-			local dx, dy = global.grid:lip(2*(cx - x) + x, 2*(cy - y) + y)
-			global.grid:add(dx, dy, false)
-		end
-		global.grid.buttons = {}
-	end)
-	table.insert(self.buttons, newButton)
-
-	local newButton = Button.create("transformer 3 odd", x, y + 180, 200, 30, function()
-		global.grid:deselect()
-		local x, y = global.grid:snapXY(mm_x, mm_y)
-		global.grid:add(x, y, false)
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			if i % 2 == 1 then
-				global.grid:add(cx, cy, false)
-			end
-		end
-		for i,cx,cy in utils.connection(utils.c12s, x, y) do
-			local dx, dy = global.grid:lip(2*(cx - x) + x, 2*(cy - y) + y)
-			global.grid:add(dx, dy, false)
-		end
-		global.grid.buttons = {}
-	end)
-	table.insert(self.buttons, newButton)
-
-	for i,g in pairs(self.savedGroups) do
-		local newButton = Button.create(g.name, x, y + 180 + i * 30, 200, 30, function()
-			global.grid:deselect()
-			local x, y = global.grid:snapXY(mm_x, mm_y)
-			g:placeToGrid(x, y)
-			global.grid.buttons = {}
-		end)
-		table.insert(self.buttons, newButton)
-	end
 end
 
 function Grid:has(x, y, maxDistance)
@@ -382,12 +242,6 @@ function Grid:selectionSize()
 end
 
 function Grid:update(dt)
-	local wasButton = false
-	for _,b in pairs(self.buttons) do
-		wasButton = wasButton or b:update(dt)
-	end
-	if wasButton then return end
-
 	if love.mouse.isDown(1) then
 		if self.mouseWasDown == false then
 			local px_x, px_y = love.mouse.getPosition()
@@ -405,12 +259,10 @@ function Grid:update(dt)
 			local mm_x, mm_y = camera.px2mm(px_x, px_y)
 			if self:has(mm_x, mm_y, 6) then
 				if self:selectionSize() > 0 then
-					-- self:createPlaceButtons(px_x, px_y)
-					-- self:createInput(px_x, px_y)
-					self:createSaveButton(px_x, px_y)
+					global.menu:createSaveButton(px_x, px_y)
 				end
 			else
-				self:createPlaceButtons(px_x, px_y)
+				global.menu:createPlaceButtons(px_x, px_y)
 			end
 		end
 		self.rightMouseWasDown = true
@@ -475,9 +327,5 @@ function Grid:draw()
 
 	for _,p in pairs(self.points) do
 		p:draw()
-	end
-
-	for _,b in pairs(self.buttons) do
-		b:draw()
 	end
 end

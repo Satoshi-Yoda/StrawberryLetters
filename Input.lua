@@ -69,7 +69,6 @@ function Input:update(dt)
 end
 
 function Input:draw()
-	if self.done then return end
 	local x, y = self.x, self.y
 
 	love.graphics.setColor(110, 90, 60)

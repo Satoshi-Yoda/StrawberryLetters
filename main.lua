@@ -1,10 +1,11 @@
 require "camera"
-require "Point"
 require "Grid"
+require "Menu"
+require "Point"
 
 global = {
 	grid = {},
-	mode = "move"
+	menu = {},
 }
 
 function love.load()
@@ -14,14 +15,17 @@ function love.load()
 	love.window.setTitle("Strawberry Letters")
 
 	global.grid = Grid.create()
+	global.menu = Menu.create()
 end
 
 function love.update(dt)
+	if global.menu:update(dt) then return end
 	camera.update(dt)
 	global.grid:update(dt)
 end
 
 function love.draw()
 	global.grid:draw()
+	global.menu:draw()
 end
 
