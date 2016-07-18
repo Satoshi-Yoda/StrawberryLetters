@@ -150,7 +150,7 @@ function Grid:expandSelection()
 	if p.selected then
 		local neighbours = p:getNeighbours()
 		for _,n in pairs(neighbours) do
-			if n ~= EMPTY and p:hasLinkTo(n) then
+			if n ~= EMPTY and (p:hasLinkTo(n) or n:hasLinkTo(p)) then
 				n.willBeSelected = true
 			end
 		end
@@ -162,6 +162,21 @@ function Grid:expandSelection()
 		p.selected = true
 		p.willBeSelected = nil
 	end
+	end
+end
+
+function Grid:checkLinks()
+	for _,p in pairs(self.points) do
+		for _,n in pairs(p:getNeighbours()) do
+		if n ~= EMPTY then
+			if p:hasLinkTo(n) and not n:hasLinkTo(p) then
+				n:enableLinkTo(p)
+			end
+			if n:hasLinkTo(p) and not p:hasLinkTo(n) then
+				p:enableLinkTo(n)
+			end
+		end
+		end
 	end
 end
 
@@ -295,6 +310,8 @@ function Grid:selectionSize()
 end
 
 function Grid:update(dt)
+	self:checkLinks() -- TODO not every frame for all points, but for new one and for moved selection
+
 	if love.mouse.isDown(1) then
 		if self.mouseWasDown == false then
 			local px_x, px_y = love.mouse.getPosition()
