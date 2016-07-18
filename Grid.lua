@@ -39,7 +39,7 @@ function Grid:deselect()
 	end
 end
 
-function Grid:add(x, y, removeSelection)
+function Grid:add(x, y, removeSelection, point)
 	if removeSelection == nil then removeSelection = true end
 
 	-- x, y, distance = self:lip(x, y)
@@ -51,10 +51,47 @@ function Grid:add(x, y, removeSelection)
 		end
 	end
 
-	local newPoint = Point.create(x, y)
+	local newPoint
+	if point ~= nil then
+		newPoint = Point.copy(point)
+		newPoint.x = x
+		newPoint.y = y
+	else
+		newPoint = Point.create(x, y)
+	end
+
 	newPoint.selected = true
 	self:snap(newPoint)
 	table.insert(self.points, newPoint)
+end
+
+function Grid:tryDisableLink(x, y)
+	local p1 = nil
+	local p2 = nil
+	local result = false
+	for _,p in pairs(self.points) do
+		if utils.math.distance(p.x, p.y, x, y) < 6.0 then
+			if p1 == nil then p1 = p
+			elseif p2 == nil then p2 = p else
+				print("error") -- TODO remove this
+			end
+		end
+	end
+
+	if p1 ~= nil and p2 ~= nil then
+		if p1:possibleLinkTo(p2) and p2:possibleLinkTo(p1) then
+			if p1:hasLinkTo(p2) or p2:hasLinkTo(p1) then
+				p1:disableLinkTo(p2)
+				p2:disableLinkTo(p1)
+				result = true
+			else
+				p1:enableLinkTo(p2)
+				p2:enableLinkTo(p1)
+				result = true
+			end
+		end
+	end
+	return result
 end
 
 function Grid:select(x, y)
@@ -99,7 +136,9 @@ function Grid:expandSelection()
 	if p.selected then
 		local neighbours = p:getNeighbours()
 		for _,n in pairs(neighbours) do
-			n.willBeSelected = true
+			if n ~= EMPTY then
+				n.willBeSelected = true
+			end
 		end
 	end
 	end
@@ -246,7 +285,8 @@ function Grid:update(dt)
 		if self.mouseWasDown == false then
 			local px_x, px_y = love.mouse.getPosition()
 			local x, y = camera.px2mm(px_x, px_y)
-			self:select(x, y)
+			local result = self:tryDisableLink(x, y)
+			if not result then self:select(x, y) end
 		end
 		self.mouseWasDown = true
 	else

@@ -28,4 +28,3 @@ function love.draw()
 	global.grid:draw()
 	global.menu:draw()
 end
-

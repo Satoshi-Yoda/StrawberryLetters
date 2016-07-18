@@ -12,7 +12,7 @@ function Group.createFromSelection(name)
 
 	for _,p in pairs(global.grid.points) do
 		if p.selected then
-			table.insert(new.points, Point.create(p.x, p.y))
+			table.insert(new.points, Point.copy(p))
 		end
 	end
 
@@ -28,6 +28,6 @@ function Group:placeToGrid(x, y)
 	cx, cy = cx / #self.points, cy / #self.points
 
 	for _,p in pairs(self.points) do
-		global.grid:add(p.x - cx + x, p.y - cy + y, false)
+		global.grid:add(p.x - cx + x, p.y - cy + y, false, p)
 	end
 end
