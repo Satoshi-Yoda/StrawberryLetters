@@ -136,7 +136,7 @@ function Grid:expandSelection()
 	if p.selected then
 		local neighbours = p:getNeighbours()
 		for _,n in pairs(neighbours) do
-			if n ~= EMPTY then
+			if n ~= EMPTY and p:hasLinkTo(n) then
 				n.willBeSelected = true
 			end
 		end
