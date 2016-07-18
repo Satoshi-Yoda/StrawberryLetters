@@ -66,28 +66,42 @@ function Grid:add(x, y, removeSelection, point)
 end
 
 function Grid:tryDisableLink(x, y)
-	local p1 = nil
-	local p2 = nil
 	local result = false
+	local p1 = nil
+	local d1 = math.huge
+	local p2 = nil
+	local d2 = math.huge
+	
 	for _,p in pairs(self.points) do
-		if utils.math.distance(p.x, p.y, x, y) < 6.0 then
-			if p1 == nil then p1 = p
-			elseif p2 == nil then p2 = p else
-				print("error") -- TODO remove this
+		local d = utils.math.distance(p.x, p.y, x, y)
+		if d < d1 then
+			if d1 < d2 then
+				p2 = p1
+				d2 = d1
 			end
+			p1 = p
+			d1 = d
+		elseif d < d2 then
+			p2 = p
+			d2 = d
 		end
 	end
 
 	if p1 ~= nil and p2 ~= nil then
-		if p1:possibleLinkTo(p2) and p2:possibleLinkTo(p1) then
-			if p1:hasLinkTo(p2) or p2:hasLinkTo(p1) then
-				p1:disableLinkTo(p2)
-				p2:disableLinkTo(p1)
-				result = true
-			else
-				p1:enableLinkTo(p2)
-				p2:enableLinkTo(p1)
-				result = true
+		local cx = (p1.x + p2.x) / 2
+		local cy = (p1.y + p2.y) / 2
+		local d = utils.math.distance(cx, cy, x, y)
+		if d < 5.3 / 3 then
+			if p1:possibleLinkTo(p2) then
+				if p1:hasLinkTo(p2) or p2:hasLinkTo(p1) then
+					p1:disableLinkTo(p2)
+					p2:disableLinkTo(p1)
+					result = true
+				else
+					p1:enableLinkTo(p2)
+					p2:enableLinkTo(p1)
+					result = true
+				end
 			end
 		end
 	end
