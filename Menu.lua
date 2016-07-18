@@ -25,6 +25,58 @@ function Menu:createSaveButton(x, y)
 		global.menu:createInput(x, y)
 	end)
 	table.insert(self.buttons, newButton)
+
+	local newButton = Button.create("rotate left", x, y + 30, 200, 30, function()
+		local cx, cy = global.grid:get_selection_center()
+		if cx == nil then return end
+		local cp = global.grid:get_nearest(cx, cy)
+
+		for _,p in pairs(global.grid.points) do
+		if p.selected then
+			local ax = p.x - cp.x
+			local ay = p.y - cp.y
+			local alpha = math.pi/6
+			p.x = cp.x + ax * math.cos(alpha) - ay * math.sin(alpha)
+			p.y = cp.y + ax * math.sin(alpha) + ay * math.cos(alpha)
+			p:rotateLinksLeft()
+			global.grid:snap(p)
+		end
+		end
+		global.menu.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+
+	local newButton = Button.create("rotate right", x, y + 60, 200, 30, function()
+		local cx, cy = global.grid:get_selection_center()
+		if cx == nil then return end
+		local cp = global.grid:get_nearest(cx, cy)
+
+		for _,p in pairs(global.grid.points) do
+		if p.selected then
+			local ax = p.x - cp.x
+			local ay = p.y - cp.y
+			local alpha = -math.pi/6
+			p.x = cp.x + ax * math.cos(alpha) - ay * math.sin(alpha)
+			p.y = cp.y + ax * math.sin(alpha) + ay * math.cos(alpha)
+			p:rotateLinksRight()
+			global.grid:snap(p)
+		end
+		end
+		global.menu.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+
+	local newButton = Button.create("round odd", x, y + 90, 200, 30, function()
+		print("round odd")
+		global.menu.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+
+	local newButton = Button.create("round even", x, y + 120, 200, 30, function()
+		print("round even")
+		global.menu.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
 end
 
 function Menu:createInput(x, y)

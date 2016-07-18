@@ -45,6 +45,26 @@ function Point:getNeighbours()
 	return neighbours
 end
 
+function Point:rotateLinksLeft()
+	local new_links = {}
+	for i = 1,12 do
+		local next_index = i + 1
+		if next_index > 12 then next_index = 1 end
+		new_links[i] = self.deprecated_links[next_index]
+	end
+	self.deprecated_links = new_links
+end
+
+function Point:rotateLinksRight()
+	local new_links = {}
+	for i = 1,12 do
+		local next_index = i - 1
+		if next_index < 1 then next_index = 12 end
+		new_links[i] = self.deprecated_links[next_index]
+	end
+	self.deprecated_links = new_links
+end
+
 function Point:possibleLinkTo(p)
 	local neighbours = self:getNeighbours()
 	for i,n in pairs(neighbours) do

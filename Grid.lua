@@ -224,6 +224,36 @@ function Grid:get(x, y)
 	return nil
 end
 
+function Grid:get_nearest(x, y)
+	local d_min = math.huge
+	local p_min = nil
+	for _,p in pairs(self.points) do
+		local distance = math.sqrt((p.x - x) * (p.x - x) + (p.y - y) * (p.y - y))
+		if distance < d_min then
+			d_min = distance
+			p_min = p
+		end
+	end
+	return p_min
+end
+
+function Grid:get_selection_center()
+	local sum_x = 0
+	local sum_y = 0
+	local count = 0
+	for _,p in pairs(self.points) do
+	if p.selected then
+		sum_x = sum_x + p.x
+		sum_y = sum_y + p.y
+		count = count + 1
+	end
+	end
+
+	if count == 0 then return nil end
+
+	return sum_x / count, sum_y / count
+end
+
 function Grid:snap(point)
 	point.x = 2.5 * math.floor(0.5 + (point.x / 2.5))
 	point.y = 2.5 * math.floor(0.5 + (point.y / 2.5))
