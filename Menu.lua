@@ -103,7 +103,7 @@ function Menu:createSaveButton(x, y)
 				local vector = {x = cp.x - new.x, y = cp.y - new.y}
 				vector.x, vector.y = utils.math.normalize(vector.x, vector.y, 2.5)
 				local p_nearest, d_nearest = global.grid:get_nearest(new.x + vector.x, new.y + vector.y)
-				if d_nearest > 9 then
+				if d_nearest > 9.2 then
 					new.x = new.x + vector.x
 					new.y = new.y + vector.y
 					global.grid:snap(new)
