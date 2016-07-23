@@ -70,14 +70,61 @@ function Menu:createSaveButton(x, y)
 	y = y + 30
 
 	local newButton = Button.create("round odd", x, y, 200, 30, function()
-		print("round odd")
+		local cx, cy = global.grid:get_selection_center()
+		if cx == nil then return end
+		local cp = global.grid:get_nearest(cx, cy)
+
+		local max_distance = 0
+		local highest_point = nil
+		local highest_y = -math.huge
+		for _,p in pairs(global.grid.points) do
+		if p.selected then
+			local current_distance = utils.math.distance(p.x, p.y, cp.x, cp.y)
+			if current_distance > max_distance then
+				max_distance = current_distance
+			end
+			if p.y > highest_y then
+				highest_y = p.y
+				highest_point = p
+			end
+		end
+		end
+
+		local additional_alpha = (highest_point.x == cp.x) or max_distance == 0
+
+		max_distance = max_distance + 10
+		local radial_count = math.floor(0.5 + max_distance / 10)
+		local circle_count = 6 * radial_count
+
+		for i = 0, circle_count - 1 do
+			local alpha = 2 * math.pi * i / circle_count
+			if additional_alpha then alpha = alpha + 2 * math.pi * 0.25 / circle_count end
+
+			local new = {x = cp.x + max_distance * math.sin(alpha), y = cp.y + max_distance * math.cos(alpha)}
+			global.grid:snap(new)
+			while true do
+				local vector = {x = cp.x - new.x, y = cp.y - new.y}
+				vector.x, vector.y = utils.math.normalize(vector.x, vector.y, 2.5)
+				local p_nearest, d_nearest = global.grid:get_nearest(new.x + vector.x, new.y + vector.y)
+				if d_nearest > 9.2 then
+					new.x = new.x + vector.x
+					new.y = new.y + vector.y
+					global.grid:snap(new)
+				else
+					break
+				end
+			end
+
+			global.grid:add(new.x, new.y, false)
+		end
+
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
 	y = y + 30
 
 	local newButton = Button.create("round even", x, y, 200, 30, function()
-		print("round even")
+		print("round even todo")
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)

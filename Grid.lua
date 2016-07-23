@@ -245,7 +245,7 @@ function Grid:get_nearest(x, y)
 			p_min = p
 		end
 	end
-	return p_min
+	return p_min, d_min
 end
 
 function Grid:get_selection_center()
@@ -351,7 +351,7 @@ function Grid:selectionSize()
 end
 
 function Grid:update(dt)
-	self:checkLinks() -- TODO not every frame for all points, but for new one and for moved selection
+	-- self:checkLinks() -- TODO not every frame for all points, but for new one and for moved selection
 
 	if love.mouse.isDown(1) then
 		if self.mouseWasDown == false then
