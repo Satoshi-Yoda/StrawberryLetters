@@ -25,8 +25,9 @@ function Menu:createSaveButton(x, y)
 		global.menu:createInput(x, y)
 	end)
 	table.insert(self.buttons, newButton)
+	y = y + 30
 
-	local newButton = Button.create("rotate left", x, y + 30, 200, 30, function()
+	local newButton = Button.create("rotate left", x, y, 200, 30, function()
 		local cx, cy = global.grid:get_selection_center()
 		if cx == nil then return end
 		local cp = global.grid:get_nearest(cx, cy)
@@ -45,8 +46,9 @@ function Menu:createSaveButton(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
+	y = y + 30
 
-	local newButton = Button.create("rotate right", x, y + 60, 200, 30, function()
+	local newButton = Button.create("rotate right", x, y, 200, 30, function()
 		local cx, cy = global.grid:get_selection_center()
 		if cx == nil then return end
 		local cp = global.grid:get_nearest(cx, cy)
@@ -65,14 +67,16 @@ function Menu:createSaveButton(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
+	y = y + 30
 
-	local newButton = Button.create("round odd", x, y + 90, 200, 30, function()
+	local newButton = Button.create("round odd", x, y, 200, 30, function()
 		print("round odd")
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
+	y = y + 30
 
-	local newButton = Button.create("round even", x, y + 120, 200, 30, function()
+	local newButton = Button.create("round even", x, y, 200, 30, function()
 		print("round even")
 		global.menu.buttons = {}
 	end)
@@ -84,6 +88,7 @@ function Menu:createInput(x, y)
 
 	local newInput = Input.create("Enter name and press Enter", x, y, 300, 30, function(input)
 		local newGroup = Group.createFromSelection(input.text)
+		newGroup:saveToFile()
 		table.insert(global.grid.savedGroups, newGroup)
 		global.menu.buttons = {}
 	end)
@@ -102,8 +107,22 @@ function Menu:createPlaceButtons(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
+	y = y + 30
 
-	local newButton = Button.create("honeycomb 2 even", x, y + 30, 200, 30, function()
+	local newButton = Button.create("clean directory", x, y, 200, 30, function()
+		local files = love.filesystem.getDirectoryItems("")
+		for k,file in ipairs(files) do
+			if string.find(file, "%.group") then
+				love.filesystem.remove(file)
+				print("Removed " .. file)
+			end
+		end
+		global.menu.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+	y = y + 30
+
+	local newButton = Button.create("honeycomb 2 even", x, y, 200, 30, function()
 		global.grid:deselect()
 		local x, y = global.grid:snapXY(mm_x, mm_y)
 		global.grid:add(x, y, false)
@@ -115,8 +134,9 @@ function Menu:createPlaceButtons(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
+	y = y + 30
 
-	local newButton = Button.create("honeycomb 2 odd", x, y + 60, 200, 30, function()
+	local newButton = Button.create("honeycomb 2 odd", x, y, 200, 30, function()
 		global.grid:deselect()
 		local x, y = global.grid:snapXY(mm_x, mm_y)
 		global.grid:add(x, y, false)
@@ -128,8 +148,9 @@ function Menu:createPlaceButtons(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
+	y = y + 30
 
-	local newButton = Button.create("honeycomb 3 even", x, y + 90, 200, 30, function()
+	local newButton = Button.create("honeycomb 3 even", x, y, 200, 30, function()
 		global.grid:deselect()
 		local x, y = global.grid:snapXY(mm_x, mm_y)
 		global.grid:add(x, y, false)
@@ -145,8 +166,9 @@ function Menu:createPlaceButtons(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
+	y = y + 30
 
-	local newButton = Button.create("honeycomb 3 odd", x, y + 120, 200, 30, function()
+	local newButton = Button.create("honeycomb 3 odd", x, y, 200, 30, function()
 		global.grid:deselect()
 		local x, y = global.grid:snapXY(mm_x, mm_y)
 		global.grid:add(x, y, false)
@@ -162,8 +184,9 @@ function Menu:createPlaceButtons(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
+	y = y + 30
 
-	local newButton = Button.create("transformer 3 even", x, y + 150, 200, 30, function()
+	local newButton = Button.create("transformer 3 even", x, y, 200, 30, function()
 		global.grid:deselect()
 		local x, y = global.grid:snapXY(mm_x, mm_y)
 		global.grid:add(x, y, false)
@@ -179,8 +202,9 @@ function Menu:createPlaceButtons(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
+	y = y + 30
 
-	local newButton = Button.create("transformer 3 odd", x, y + 180, 200, 30, function()
+	local newButton = Button.create("transformer 3 odd", x, y, 200, 30, function()
 		global.grid:deselect()
 		local x, y = global.grid:snapXY(mm_x, mm_y)
 		global.grid:add(x, y, false)
@@ -196,15 +220,19 @@ function Menu:createPlaceButtons(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
+	y = y + 30
+
+	global.grid:loadGroups()
 
 	for i,g in pairs(global.grid.savedGroups) do
-		local newButton = Button.create(g.name, x, y + 180 + i * 30, 200, 30, function()
+		local newButton = Button.create(g.name, x, y, 200, 30, function()
 			global.grid:deselect()
 			local x, y = global.grid:snapXY(mm_x, mm_y)
 			g:placeToGrid(x, y)
 			global.menu.buttons = {}
 		end)
 		table.insert(self.buttons, newButton)
+		y = y + 30
 	end
 end
 

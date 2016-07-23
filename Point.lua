@@ -32,6 +32,23 @@ function Point.copy(point)
 	return new
 end
 
+function Point.readFromFile(file)
+	local new = {}
+	setmetatable(new, Point)
+
+	new.x = file:read(8)
+	new.y = file:read(8)
+	new.deprecated_links = {}
+	new.selected = false
+
+	return new
+end
+
+function Point:writeToFile(file)
+	file:write(self.x, 8)
+	file:write(self.y, 8)
+end
+
 function Point:getNeighbours()
 	local neighbours = {}
 	for i,x,y in utils.connection(utils.c12, self.x, self.y) do

@@ -27,6 +27,17 @@ function Grid.create(x, y)
 	return new
 end
 
+function Grid:loadGroups()
+	self.savedGroups = {}
+	local files = love.filesystem.getDirectoryItems("")
+	for k,file in ipairs(files) do
+		if string.find(file, "%.group") then
+			local newGroup = Group.loadFromFile(file)
+			table.insert(self.savedGroups, newGroup)
+		end
+	end
+end
+
 function Grid:has(x, y, maxDistance)
 	maxDistance = maxDistance or 0.5
 	local x, y, distance = self:lip(x, y)
