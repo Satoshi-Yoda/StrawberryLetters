@@ -39,6 +39,11 @@ function Point.readFromFile(file)
 	new.x = file:read(8)
 	new.y = file:read(8)
 	new.deprecated_links = {}
+	for i = 1,12 do
+		if file:read(1) == "t" then
+			new.deprecated_links[i] = true
+		end
+	end
 	new.selected = false
 
 	return new
@@ -47,6 +52,13 @@ end
 function Point:writeToFile(file)
 	file:write(self.x, 8)
 	file:write(self.y, 8)
+	for i = 1,12 do
+		if self.deprecated_links[i] == true then
+			file:write("t", 1)
+		else
+			file:write("f", 1)
+		end
+	end
 end
 
 function Point:getNeighbours()
