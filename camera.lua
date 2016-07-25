@@ -17,9 +17,12 @@ function camera.multipler()
 end
 
 function camera.update(dt)
+	local changed = false
+
 	if love.keyboard.isDown("=") then
 		if camera.zoomPressed == false then
 			camera.scale = camera.scale + 1
+			changed = true
 		end
 		camera.zoomPressed = true
 	else
@@ -29,13 +32,20 @@ function camera.update(dt)
 	if love.keyboard.isDown("-") then
 		if camera.unzoomPressed == false then
 			camera.scale = camera.scale - 1
+			changed = true
 		end
 		camera.unzoomPressed = true
 	else
 		camera.unzoomPressed = false
 	end
 
-	camera.scale = utils.math.clamp(1, camera.scale, 5)
+	if changed then
+		camera.scale = utils.math.clamp(1, camera.scale, 5)
+	end
+
+	if love.keyboard.isDown("c") or changed then
+		camera.center()
+	end
 end
 
 function camera.move(dt)
@@ -51,6 +61,11 @@ function camera.move(dt)
 	if love.keyboard.isDown("down") then
 		camera.px_y = camera.px_y - camera.speed * dt
 	end
+end
+
+function camera.center()
+	local cx, cy = global.grid:getCenter()
+	camera.px_x, camera.px_y = -camera.scale * cx + camera.w / 2, -camera.scale * cy + camera.h / 2
 end
 
 function camera.mm2px(x, y)

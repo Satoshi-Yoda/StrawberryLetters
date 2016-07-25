@@ -277,6 +277,21 @@ function Grid:get_nearest(x, y)
 	return p_min, d_min
 end
 
+function Grid:getCenter()
+	local sum_x = 0
+	local sum_y = 0
+	local count = 0
+	for _,p in pairs(self.points) do
+		sum_x = sum_x + p.x
+		sum_y = sum_y + p.y
+		count = count + 1
+	end
+
+	if count == 0 then return 0, 0 end
+
+	return sum_x / count, sum_y / count
+end
+
 function Grid:get_selection_center()
 	local sum_x = 0
 	local sum_y = 0
