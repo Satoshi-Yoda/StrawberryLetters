@@ -264,16 +264,6 @@ function Grid:get(x, y)
 	return self.hash[hash_x][hash_y]
 end
 
-function Grid:old_get(x, y)
-	for _,p in pairs(self.points) do
-		local distance = math.sqrt((p.x - x) * (p.x - x) + (p.y - y) * (p.y - y))
-		if distance < 0.5 then
-			return p
-		end
-	end
-	return nil
-end
-
 function Grid:get_nearest(x, y)
 	local d_min = math.huge
 	local p_min = nil
