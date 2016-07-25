@@ -26,8 +26,6 @@ function Group.loadFromFile(fileName)
 	new.name = fileName
 	new.points = {}
 
-	print("loading group = " .. fileName)
-
 	if not love.filesystem.exists(fileName) then
 		print("Group.loadFromFile ERROR file not exists")
 		return
