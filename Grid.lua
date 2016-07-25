@@ -52,6 +52,8 @@ function Grid:deselect()
 end
 
 function Grid:add(x, y, removeSelection, point)
+	x, y = self:snapXY(x, y)
+
 	if removeSelection == nil then removeSelection = true end
 
 	-- x, y, distance = self:lip(x, y)
@@ -75,19 +77,25 @@ function Grid:add(x, y, removeSelection, point)
 	newPoint.selected = true
 	table.insert(self.points, newPoint)
 	self:hashPoint(newPoint)
+
+	return newPoint
 end
 
 function Grid:hashPoint(point)
 	self:snap(point)
-	if self.hash[point.x] == nil then
-		self.hash[point.x] = {}
+	local hash_x = math.floor(0.5 + 2 * point.x)
+	local hash_y = math.floor(0.5 + 2 * point.y)
+	if self.hash[hash_x] == nil then
+		self.hash[hash_x] = {}
 	end
-	self.hash[point.x][point.y] = point
+	self.hash[hash_x][hash_y] = point
 end
 
 function Grid:unhashPoint(point)
-	if self.hash[point.x] == nil then return end
-	self.hash[point.x][point.y] = nil
+	local hash_x = math.floor(0.5 + 2 * point.x)
+	local hash_y = math.floor(0.5 + 2 * point.y)
+	if self.hash[hash_x] == nil then return end
+	self.hash[hash_x][hash_y] = nil
 end
 
 function Grid:tryDisableLink(x, y)
@@ -175,7 +183,8 @@ function Grid:expandSelection()
 	if p.selected then
 		local neighbours = p:getNeighbours()
 		for _,n in pairs(neighbours) do
-			if n ~= EMPTY and (p:hasLinkTo(n) or n:hasLinkTo(p) or love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
+			local shift = love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")
+			if n ~= EMPTY and (p:hasLinkTo(n) or n:hasLinkTo(p) or shift) then
 				n.willBeSelected = true
 			end
 		end
@@ -249,8 +258,10 @@ end
 
 function Grid:get(x, y)
 	x, y = self:snapXY(x, y)
-	if self.hash[x] == nil then return nil end
-	return self.hash[x][y]
+	local hash_x = math.floor(0.5 + 2 * x)
+	local hash_y = math.floor(0.5 + 2 * y)
+	if self.hash[hash_x] == nil then return nil end
+	return self.hash[hash_x][hash_y]
 end
 
 function Grid:old_get(x, y)

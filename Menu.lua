@@ -69,8 +69,50 @@ function _around_selection_old()
 	end
 end
 
-function _around_selection()
+function _around_selection(shift)
+	local highestPoint = nil
+	local highest_y = math.huge
+	for _,p in pairs(global.grid.points) do
+	if p.selected then
+		if p.y < highest_y then
+			highest_y = p.y
+			highestPoint = p
+		end
+	end
+	end
 
+	local vx = -2.5
+	local vy = -10
+	if shift then vx = 2.5 end
+	local newPoint = global.grid:add(highestPoint.x + vx, highestPoint.y + vy, false)
+	local firstPoint = newPoint
+
+	while true do
+		local temp_vx = vx
+		local temp_vy = vy
+		angle = -math.pi/6
+		vx = temp_vx * math.cos(angle) - temp_vy * math.sin(angle)
+		vy = temp_vx * math.sin(angle) + temp_vy * math.cos(angle)
+
+		while true do
+			local temp_vx = vx
+			local temp_vy = vy
+			angle = math.pi/6
+			vx = temp_vx * math.cos(angle) - temp_vy * math.sin(angle)
+			vy = temp_vx * math.sin(angle) + temp_vy * math.cos(angle)
+			local point, distance = global.grid:get_nearest(newPoint.x + vx, newPoint.y + vy)
+			if distance < 9 then
+				if point == firstPoint then return end
+				break
+			end
+		end
+		local temp_vx = vx
+		local temp_vy = vy
+		angle = -math.pi/6
+		vx = temp_vx * math.cos(angle) - temp_vy * math.sin(angle)
+		vy = temp_vx * math.sin(angle) + temp_vy * math.cos(angle)
+		newPoint = global.grid:add(newPoint.x + vx, newPoint.y + vy, false)
+	end
 end
 
 function _rotate_selection(angle)
@@ -136,14 +178,14 @@ function Menu:createSaveButton(x, y)
 	y = y + BUTTON_HEIGHT
 
 	local newButton = Button.create("around odd", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
-		_around_selection_old()
+		_around_selection(false)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
 	y = y + BUTTON_HEIGHT
 
 	local newButton = Button.create("around even", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
-		print("round even todo")
+		_around_selection(true)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
