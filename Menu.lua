@@ -6,6 +6,9 @@ require "utils"
 Menu = {}
 Menu.__index = Menu
 
+BUTTON_HEIGHT = 24
+BUTTON_WIDTH = 200
+
 function Menu.create(x, y)
 	local new = {}
 	setmetatable(new, Menu)
@@ -21,13 +24,13 @@ function Menu:createSaveButton(x, y)
 
 	local mm_x, mm_y = camera.px2mm(x, y)
 
-	local newButton = Button.create("save selection", x, y, 200, 30, function()
+	local newButton = Button.create("save selection", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		global.menu:createInput(x, y)
 	end)
 	table.insert(self.buttons, newButton)
-	y = y + 30
+	y = y + BUTTON_HEIGHT
 
-	local newButton = Button.create("rotate left", x, y, 200, 30, function()
+	local newButton = Button.create("rotate left", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		local cx, cy = global.grid:get_selection_center()
 		if cx == nil then return end
 		local cp = global.grid:get_nearest(cx, cy)
@@ -46,9 +49,9 @@ function Menu:createSaveButton(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
-	y = y + 30
+	y = y + BUTTON_HEIGHT
 
-	local newButton = Button.create("rotate right", x, y, 200, 30, function()
+	local newButton = Button.create("rotate right", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		local cx, cy = global.grid:get_selection_center()
 		if cx == nil then return end
 		local cp = global.grid:get_nearest(cx, cy)
@@ -67,9 +70,26 @@ function Menu:createSaveButton(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
-	y = y + 30
+	y = y + BUTTON_HEIGHT
 
-	local newButton = Button.create("round odd", x, y, 200, 30, function()
+	local newButton = Button.create("flip", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
+		local cx, cy = global.grid:get_selection_center()
+		if cx == nil then return end
+		local cp = global.grid:get_nearest(cx, cy)
+
+		for _,p in pairs(global.grid.points) do
+		if p.selected then
+			p.x = cp.x - (p.x - cp.x)
+			p:flipLinks()
+			global.grid:snap(p)
+		end
+		end
+		global.menu.buttons = {}
+	end)
+	table.insert(self.buttons, newButton)
+	y = y + BUTTON_HEIGHT
+
+	local newButton = Button.create("round odd", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		local cx, cy = global.grid:get_selection_center()
 		if cx == nil then return end
 		local cp = global.grid:get_nearest(cx, cy)
@@ -121,9 +141,9 @@ function Menu:createSaveButton(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
-	y = y + 30
+	y = y + BUTTON_HEIGHT
 
-	local newButton = Button.create("round even", x, y, 200, 30, function()
+	local newButton = Button.create("round even", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		print("round even todo")
 		global.menu.buttons = {}
 	end)
@@ -133,7 +153,7 @@ end
 function Menu:createInput(x, y)
 	self.buttons = {}
 
-	local newInput = Input.create("Enter name and press Enter", x, y, 300, 30, function(input)
+	local newInput = Input.create("Enter name and press Enter", x, y, 240, BUTTON_HEIGHT, function(input)
 		local newGroup = Group.createFromSelection(input.text)
 		newGroup:saveToFile()
 		table.insert(global.grid.savedGroups, newGroup)
@@ -147,16 +167,16 @@ function Menu:createPlaceButtons(x, y)
 
 	local mm_x, mm_y = camera.px2mm(x, y)
 
-	local newButton = Button.create("point", x, y, 200, 30, function()
+	local newButton = Button.create("point", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		global.grid:deselect()
 		local x, y = global.grid:snapXY(mm_x, mm_y)
 		global.grid:add(x, y, false)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
-	y = y + 30
+	y = y + BUTTON_HEIGHT
 
-	local newButton = Button.create("clean directory", x, y, 200, 30, function()
+	local newButton = Button.create("clean directory", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		local files = love.filesystem.getDirectoryItems("")
 		for k,file in ipairs(files) do
 			if string.find(file, "%.group") then
@@ -167,9 +187,9 @@ function Menu:createPlaceButtons(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
-	y = y + 30
+	y = y + BUTTON_HEIGHT
 
-	local newButton = Button.create("honeycomb 2 even", x, y, 200, 30, function()
+	local newButton = Button.create("honeycomb 2", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		global.grid:deselect()
 		local x, y = global.grid:snapXY(mm_x, mm_y)
 		global.grid:add(x, y, false)
@@ -181,23 +201,9 @@ function Menu:createPlaceButtons(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
-	y = y + 30
+	y = y + BUTTON_HEIGHT
 
-	local newButton = Button.create("honeycomb 2 odd", x, y, 200, 30, function()
-		global.grid:deselect()
-		local x, y = global.grid:snapXY(mm_x, mm_y)
-		global.grid:add(x, y, false)
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			if i % 2 == 1 then
-				global.grid:add(cx, cy, false)
-			end
-		end
-		global.menu.buttons = {}
-	end)
-	table.insert(self.buttons, newButton)
-	y = y + 30
-
-	local newButton = Button.create("honeycomb 3 even", x, y, 200, 30, function()
+	local newButton = Button.create("honeycomb 3", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		global.grid:deselect()
 		local x, y = global.grid:snapXY(mm_x, mm_y)
 		global.grid:add(x, y, false)
@@ -213,27 +219,9 @@ function Menu:createPlaceButtons(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
-	y = y + 30
+	y = y + BUTTON_HEIGHT
 
-	local newButton = Button.create("honeycomb 3 odd", x, y, 200, 30, function()
-		global.grid:deselect()
-		local x, y = global.grid:snapXY(mm_x, mm_y)
-		global.grid:add(x, y, false)
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			if i % 2 == 0 then
-				global.grid:add(cx, cy, false)
-			end
-		end
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			local dx, dy = global.grid:lip(1.9*(cx - x) + x, 1.9*(cy - y) + y)
-			global.grid:add(dx, dy, false)
-		end
-		global.menu.buttons = {}
-	end)
-	table.insert(self.buttons, newButton)
-	y = y + 30
-
-	local newButton = Button.create("transformer 3 even", x, y, 200, 30, function()
+	local newButton = Button.create("transformer 3", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		global.grid:deselect()
 		local x, y = global.grid:snapXY(mm_x, mm_y)
 		global.grid:add(x, y, false)
@@ -249,37 +237,19 @@ function Menu:createPlaceButtons(x, y)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
-	y = y + 30
-
-	local newButton = Button.create("transformer 3 odd", x, y, 200, 30, function()
-		global.grid:deselect()
-		local x, y = global.grid:snapXY(mm_x, mm_y)
-		global.grid:add(x, y, false)
-		for i,cx,cy in utils.connection(utils.c12, x, y) do
-			if i % 2 == 1 then
-				global.grid:add(cx, cy, false)
-			end
-		end
-		for i,cx,cy in utils.connection(utils.c12s, x, y) do
-			local dx, dy = global.grid:lip(2*(cx - x) + x, 2*(cy - y) + y)
-			global.grid:add(dx, dy, false)
-		end
-		global.menu.buttons = {}
-	end)
-	table.insert(self.buttons, newButton)
-	y = y + 30
+	y = y + BUTTON_HEIGHT
 
 	global.grid:loadGroups()
 
 	for i,g in pairs(global.grid.savedGroups) do
-		local newButton = Button.create(g.name, x, y, 200, 30, function()
+		local newButton = Button.create(g.name, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 			global.grid:deselect()
 			local x, y = global.grid:snapXY(mm_x, mm_y)
 			g:placeToGrid(x, y)
 			global.menu.buttons = {}
 		end)
 		table.insert(self.buttons, newButton)
-		y = y + 30
+		y = y + BUTTON_HEIGHT
 	end
 end
 

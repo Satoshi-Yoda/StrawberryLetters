@@ -94,6 +94,14 @@ function Point:rotateLinksRight()
 	self.deprecated_links = new_links
 end
 
+function Point:flipLinks()
+	local new_links = {}
+	for i = 1,12 do
+		new_links[i] = self.deprecated_links[13 - i]
+	end
+	self.deprecated_links = new_links
+end
+
 function Point:possibleLinkTo(p)
 	local neighbours = self:getNeighbours()
 	for i,n in pairs(neighbours) do
