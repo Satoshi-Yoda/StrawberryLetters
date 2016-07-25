@@ -360,11 +360,18 @@ end
 
 function Grid:removeSelection()
 	if love.keyboard.isDown("backspace") or love.keyboard.isDown("clear") or love.keyboard.isDown("delete") then
-		for i,p in pairs(self.points) do
+		local new_points = {}
+		local removed = false
+		for _,p in pairs(self.points) do
 			if p.selected then
 				self:unhashPoint(p)
-				table.remove(self.points, i)
+				removed = true
+			else
+				table.insert(new_points, p)
 			end
+		end
+		if removed then
+			self.points = new_points
 		end
 	end
 end
