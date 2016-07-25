@@ -40,10 +40,10 @@ function Menu:createSaveButton(x, y)
 			local ax = p.x - cp.x
 			local ay = p.y - cp.y
 			local alpha = math.pi/6
-			p.x = cp.x + ax * math.cos(alpha) - ay * math.sin(alpha)
-			p.y = cp.y + ax * math.sin(alpha) + ay * math.cos(alpha)
+			local p_x = cp.x + ax * math.cos(alpha) - ay * math.sin(alpha)
+			local p_y = cp.y + ax * math.sin(alpha) + ay * math.cos(alpha)
 			p:rotateLinksLeft()
-			global.grid:snap(p)
+			global.grid:movePoint(p, p_x, p_y)
 		end
 		end
 		global.menu.buttons = {}
@@ -61,10 +61,10 @@ function Menu:createSaveButton(x, y)
 			local ax = p.x - cp.x
 			local ay = p.y - cp.y
 			local alpha = -math.pi/6
-			p.x = cp.x + ax * math.cos(alpha) - ay * math.sin(alpha)
-			p.y = cp.y + ax * math.sin(alpha) + ay * math.cos(alpha)
+			local p_x = cp.x + ax * math.cos(alpha) - ay * math.sin(alpha)
+			local p_y = cp.y + ax * math.sin(alpha) + ay * math.cos(alpha)
 			p:rotateLinksRight()
-			global.grid:snap(p)
+			global.grid:movePoint(p, p_x, p_y)
 		end
 		end
 		global.menu.buttons = {}
@@ -79,9 +79,8 @@ function Menu:createSaveButton(x, y)
 
 		for _,p in pairs(global.grid.points) do
 		if p.selected then
-			p.x = cp.x - (p.x - cp.x)
+			global.grid:movePoint(p, cp.x - (p.x - cp.x), p.y)
 			p:flipLinks()
-			global.grid:snap(p)
 		end
 		end
 		global.menu.buttons = {}

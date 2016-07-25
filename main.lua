@@ -22,6 +22,8 @@ function love.update(dt)
 	if global.menu:update(dt) then return end
 	camera.update(dt)
 	global.grid:update(dt)
+	love.window.setTitle("Strawberry Letters"
+		.. " points: " .. #global.grid.points)
 end
 
 function love.draw()

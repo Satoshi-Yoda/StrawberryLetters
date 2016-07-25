@@ -7,6 +7,8 @@ camera.h = 800
 camera.px_x = 0
 camera.px_y = 0
 
+camera.speed = 200
+
 camera.zoomPressed = false
 camera.unzoomPressed = false
 
@@ -37,18 +39,17 @@ function camera.update(dt)
 end
 
 function camera.move(dt)
-	local speed = 100
 	if love.keyboard.isDown("left") then
-		camera.px_x = camera.px_x + speed * dt
+		camera.px_x = camera.px_x + camera.speed * dt
 	end
 	if love.keyboard.isDown("right") then
-		camera.px_x = camera.px_x - speed * dt
+		camera.px_x = camera.px_x - camera.speed * dt
 	end
 	if love.keyboard.isDown("up") then
-		camera.px_y = camera.px_y + speed * dt
+		camera.px_y = camera.px_y + camera.speed * dt
 	end
 	if love.keyboard.isDown("down") then
-		camera.px_y = camera.px_y - speed * dt
+		camera.px_y = camera.px_y - camera.speed * dt
 	end
 end
 

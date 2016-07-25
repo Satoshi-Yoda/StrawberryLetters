@@ -12,6 +12,7 @@ function Grid.create(x, y)
 	setmetatable(new, Grid)
 
 	new.points = {}
+	new.hash = {}
 	new.savedGroups = {}
 	new.time = 0
 	new.add_interval = 0.0001
@@ -72,8 +73,21 @@ function Grid:add(x, y, removeSelection, point)
 	end
 
 	newPoint.selected = true
-	self:snap(newPoint)
 	table.insert(self.points, newPoint)
+	self:hashPoint(newPoint)
+end
+
+function Grid:hashPoint(point)
+	self:snap(point)
+	if self.hash[point.x] == nil then
+		self.hash[point.x] = {}
+	end
+	self.hash[point.x][point.y] = point
+end
+
+function Grid:unhashPoint(point)
+	if self.hash[point.x] == nil then return end
+	self.hash[point.x][point.y] = nil
 end
 
 function Grid:tryDisableLink(x, y)
@@ -161,7 +175,7 @@ function Grid:expandSelection()
 	if p.selected then
 		local neighbours = p:getNeighbours()
 		for _,n in pairs(neighbours) do
-			if n ~= EMPTY and (p:hasLinkTo(n) or n:hasLinkTo(p)) then
+			if n ~= EMPTY and (p:hasLinkTo(n) or n:hasLinkTo(p) or love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
 				n.willBeSelected = true
 			end
 		end
@@ -189,6 +203,14 @@ function Grid:checkLinks()
 		end
 		end
 	end
+end
+
+function Grid:movePoint(point, x, y)
+	x, y = self:snapXY(x, y)
+	self:unhashPoint(point)
+	point.x = x
+	point.y = y
+	self:hashPoint(point)
 end
 
 function Grid:lip(x, y)
@@ -226,6 +248,12 @@ function Grid:lip(x, y)
 end
 
 function Grid:get(x, y)
+	x, y = self:snapXY(x, y)
+	if self.hash[x] == nil then return nil end
+	return self.hash[x][y]
+end
+
+function Grid:old_get(x, y)
 	for _,p in pairs(self.points) do
 		local distance = math.sqrt((p.x - x) * (p.x - x) + (p.y - y) * (p.y - y))
 		if distance < 0.5 then
@@ -281,7 +309,7 @@ function Grid:moveSelection()
 		if self.upPressed == false then
 			for _,p in pairs(self.points) do
 			if p.selected then
-				p.y = p.y - 2.5
+				self:movePoint(p, p.x, p.y - 2.5)
 			end
 			end
 		end
@@ -294,7 +322,7 @@ function Grid:moveSelection()
 		if self.downPressed == false then
 			for _,p in pairs(self.points) do
 			if p.selected then
-				p.y = p.y + 2.5
+				self:movePoint(p, p.x, p.y + 2.5)
 			end
 			end
 		end
@@ -307,7 +335,7 @@ function Grid:moveSelection()
 		if self.leftPressed == false then
 			for _,p in pairs(self.points) do
 			if p.selected then
-				p.x = p.x - 2.5
+				self:movePoint(p, p.x - 2.5, p.y)
 			end
 			end
 		end
@@ -320,7 +348,7 @@ function Grid:moveSelection()
 		if self.rightPressed == false then
 			for _,p in pairs(self.points) do
 			if p.selected then
-				p.x = p.x + 2.5
+				self:movePoint(p, p.x + 2.5, p.y)
 			end
 			end
 		end
@@ -334,6 +362,7 @@ function Grid:removeSelection()
 	if love.keyboard.isDown("backspace") or love.keyboard.isDown("clear") or love.keyboard.isDown("delete") then
 		for i,p in pairs(self.points) do
 			if p.selected then
+				self:unhashPoint(p)
 				table.remove(self.points, i)
 			end
 		end
@@ -351,7 +380,7 @@ function Grid:selectionSize()
 end
 
 function Grid:update(dt)
-	-- self:checkLinks() -- TODO not every frame for all points, but for new one and for moved selection
+	self:checkLinks() -- TODO not every frame for all points, but for new one and for moved selection
 
 	if love.mouse.isDown(1) then
 		if self.mouseWasDown == false then
