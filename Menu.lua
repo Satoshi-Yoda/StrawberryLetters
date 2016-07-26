@@ -141,14 +141,14 @@ function Menu:createSaveButton(x, y)
 	table.insert(self.buttons, newButton)
 	y = y + BUTTON_HEIGHT
 
-	local newButton = Button.create("around left", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
+	local newButton = Button.create("around \\", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		_around_selection(false)
 		global.menu.buttons = {}
 	end)
 	table.insert(self.buttons, newButton)
 	y = y + BUTTON_HEIGHT
 
-	local newButton = Button.create("around right", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
+	local newButton = Button.create("around /", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
 		_around_selection(true)
 		global.menu.buttons = {}
 	end)
