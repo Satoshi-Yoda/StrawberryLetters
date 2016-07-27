@@ -153,10 +153,18 @@ function Point:draw()
 
 	love.graphics.setLineWidth(1)
 
+	-- local r = 0
+	-- local g = 0
+	-- local b = 255
+
+	local r = 32
+	local g = 32
+	local b = 32
+
 	if self.selected then
 		love.graphics.setColor(255, 0, 0, 168 * camera.multipler())
 	else
-		love.graphics.setColor(0, 0, 255, 168 * camera.multipler())
+		love.graphics.setColor(r, g, b, 168 * camera.multipler())
 	end
 
 	love.graphics.circle("line", x, y, 1, 12)
@@ -190,7 +198,7 @@ function Point:draw()
 				if self.selected or neighbours[i].selected then
 					love.graphics.setColor(255, 0, 0, 168)
 				else
-					love.graphics.setColor(0, 0, 255, 168)
+					love.graphics.setColor(r, g, b, 168)
 				end
 				love.graphics.line(sx, sy, fx, fy)
 			end
