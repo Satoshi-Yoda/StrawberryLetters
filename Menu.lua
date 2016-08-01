@@ -167,6 +167,22 @@ function Menu:createInput(x, y)
 	table.insert(self.buttons, newInput)
 end
 
+function Menu:createRemoveInput(x, y)
+	self.buttons = {}
+
+	local newInput = Input.create("Enter '<name>.group' for remove", x, y, 240, BUTTON_HEIGHT, function(input)
+		local files = love.filesystem.getDirectoryItems("")
+		for k,file in ipairs(files) do
+			if file == input.text then
+				love.filesystem.remove(file)
+				print("Removed " .. file)
+			end
+		end
+		global.menu.buttons = {}
+	end)
+	table.insert(self.buttons, newInput)
+end
+
 function Menu:createPlaceButtons(x, y)
 	self.buttons = {}
 
@@ -181,15 +197,8 @@ function Menu:createPlaceButtons(x, y)
 	table.insert(self.buttons, newButton)
 	y = y + BUTTON_HEIGHT
 
-	local newButton = Button.create("clean directory", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
-		local files = love.filesystem.getDirectoryItems("")
-		for k,file in ipairs(files) do
-			if string.find(file, "%.group") then
-				love.filesystem.remove(file)
-				print("Removed " .. file)
-			end
-		end
-		global.menu.buttons = {}
+	local newButton = Button.create("remove saved group", x, y, BUTTON_WIDTH, BUTTON_HEIGHT, function()
+		global.menu:createRemoveInput(x, y)
 	end)
 	table.insert(self.buttons, newButton)
 	y = y + BUTTON_HEIGHT
