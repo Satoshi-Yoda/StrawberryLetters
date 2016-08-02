@@ -5,6 +5,10 @@ Point.__index = Point
 
 EMPTY = "empty"
 
+local r = 0
+local g = 0
+local b = 255
+
 function Point.create(x, y)
 	local new = {}
 	setmetatable(new, Point)
@@ -153,13 +157,47 @@ function Point:draw()
 
 	love.graphics.setLineWidth(1)
 
-	-- local r = 0
-	-- local g = 0
-	-- local b = 255
-
-	local r = 32
-	local g = 32
-	local b = 32
+	if love.keyboard.isDown("1") then
+		r = 0
+		g = 0
+		b = 0
+	elseif love.keyboard.isDown("2") then
+		r = 16
+		g = 16
+		b = 16
+	elseif love.keyboard.isDown("3") then
+		r = 16*(3-1)
+		g = 16*(3-1)
+		b = 16*(3-1)
+	elseif love.keyboard.isDown("4") then
+		r = 16*(4-1)
+		g = 16*(4-1)
+		b = 16*(4-1)
+	elseif love.keyboard.isDown("5") then
+		r = 16*(5-1)
+		g = 16*(5-1)
+		b = 16*(5-1)
+	elseif love.keyboard.isDown("6") then
+		r = 16*(6-1)
+		g = 16*(6-1)
+		b = 16*(6-1)
+	elseif love.keyboard.isDown("7") then
+		r = 16*(7-1)
+		g = 16*(7-1)
+		b = 16*(7-1)
+	elseif love.keyboard.isDown("8") then
+		r = 16*(8-1)
+		g = 16*(8-1)
+		b = 16*(8-1)
+	elseif love.keyboard.isDown("9") then
+		r = 16*(9-1)
+		g = 16*(9-1)
+		b = 16*(9-1)
+	elseif love.keyboard.isDown("0") then
+		r = 0
+		g = 0
+		b = 255
+	end
 
 	if self.selected then
 		love.graphics.setColor(255, 0, 0, 168 * camera.multipler())
@@ -168,7 +206,7 @@ function Point:draw()
 	end
 
 	love.graphics.circle("line", x, y, 1, 12)
-	local r = 5.3 * camera.scale
+	local radius = 5.3 * camera.scale
 
 	local neighbours = self:getNeighbours()
 
@@ -179,11 +217,11 @@ function Point:draw()
 		local ex, ey
 		if neighbours[i] == EMPTY and neighbours[prev] == EMPTY then
 			local cr = 2
-			local cx, cy = x + r * math.sin(angle), y + r * math.cos(angle)
+			local cx, cy = x + radius * math.sin(angle), y + radius * math.cos(angle)
 			love.graphics.circle("line", cx, cy, cr, 6)
-			ex, ey = x + (r - cr) * math.sin(angle), y + (r - cr) * math.cos(angle)
+			ex, ey = x + (radius - cr) * math.sin(angle), y + (radius - cr) * math.cos(angle)
 		else
-			ex, ey = x + r * math.sin(angle), y + r * math.cos(angle)
+			ex, ey = x + radius * math.sin(angle), y + radius * math.cos(angle)
 		end
 		love.graphics.line(ex, ey, x, y)
 	end

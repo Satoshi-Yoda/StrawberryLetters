@@ -452,6 +452,10 @@ function Grid:update(dt)
 	-- end
 end
 
+local r = 255
+local g = 128
+local b = 0
+
 function Grid:draw()
 	love.graphics.setLineWidth(1)
 
@@ -463,13 +467,48 @@ function Grid:draw()
 	y_min = math.floor(y_min)
 	y_max = math.floor(y_max)
 
-	-- local r = 255
-	-- local g = 128
-	-- local b = 0
-
-	local r = 168
-	local g = 168
-	local b = 168
+	local base = 10
+	if love.keyboard.isDown("1") then
+		r = 168+0
+		g = 168+0
+		b = 168+0
+	elseif love.keyboard.isDown("2") then
+		r = 168+base
+		g = 168+base
+		b = 168+base
+	elseif love.keyboard.isDown("3") then
+		r = 168+base*(3-1)
+		g = 168+base*(3-1)
+		b = 168+base*(3-1)
+	elseif love.keyboard.isDown("4") then
+		r = 168+base*(4-1)
+		g = 168+base*(4-1)
+		b = 168+base*(4-1)
+	elseif love.keyboard.isDown("5") then
+		r = 168+base*(5-1)
+		g = 168+base*(5-1)
+		b = 168+base*(5-1)
+	elseif love.keyboard.isDown("6") then
+		r = 168+base*(6-1)
+		g = 168+base*(6-1)
+		b = 168+base*(6-1)
+	elseif love.keyboard.isDown("7") then
+		r = 168+base*(7-1)
+		g = 168+base*(7-1)
+		b = 168+base*(7-1)
+	elseif love.keyboard.isDown("8") then
+		r = 168+base*(8-1)
+		g = 168+base*(8-1)
+		b = 168+base*(8-1)
+	elseif love.keyboard.isDown("9") then
+		r = 168+base*(9-1)
+		g = 168+base*(9-1)
+		b = 168+base*(9-1)
+	elseif love.keyboard.isDown("0") then
+		r = 255
+		g = 128
+		b = 0
+	end
 
 	for x = x_min, x_max, 1 do
 		if x % 10 == 0 then
